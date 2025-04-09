@@ -187,10 +187,20 @@ document.addEventListener("DOMContentLoaded", () => {
         navMenu.classList.toggle("active");
     });
 
-    // Close navigation menu when a link is clicked
+    // Close navigation menu and highlight the active tab when a link is clicked
     navLinks.forEach((link) => {
         link.addEventListener("click", () => {
             navMenu.classList.remove("active");
+            navLinks.forEach((navLink) => navLink.classList.remove("active")); // Remove active class from all links
+            link.classList.add("active"); // Add active class to the clicked link
         });
+    });
+
+    // Highlight the active tab based on the current URL
+    const currentPath = window.location.pathname.split("/").pop();
+    navLinks.forEach((link) => {
+        if (link.getAttribute("href") === currentPath) {
+            link.classList.add("active");
+        }
     });
 });
