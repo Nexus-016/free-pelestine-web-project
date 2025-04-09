@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }).addTo(map);
 
     // Example supporter data (replace with actual data from localStorage or GitHub)
-    const supporterData = {
+    const supporterData = JSON.parse(localStorage.getItem("supporterData")) || {
         "United States": 50,
         "United Kingdom": 30,
         "Palestine": 100,
@@ -36,6 +36,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Populate supporter list
     const supporterList = document.getElementById("supporterList");
+    supporterList.innerHTML = ""; // Clear existing list
     Object.entries(supporterData).forEach(([country, count]) => {
         const listItem = document.createElement("li");
         listItem.textContent = `${country}: ${count} supporters`;
@@ -53,4 +54,9 @@ document.addEventListener("DOMContentLoaded", () => {
         };
         return coordinates[country] || [0, 0]; // Default to [0, 0] if country not found
     }
+
+    // Adjust map size dynamically
+    window.addEventListener("resize", () => {
+        map.invalidateSize();
+    });
 });

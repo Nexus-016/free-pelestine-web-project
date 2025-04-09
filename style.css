@@ -187,6 +187,18 @@ footer {
     footer {
         font-size: 10px;
     }
+
+    #map {
+        height: 50vh; /* Reduce map height for smaller screens */
+    }
+
+    #info h2 {
+        font-size: 1.2rem;
+    }
+
+    #supporterList li {
+        font-size: 0.9rem;
+    }
 }
 
 @keyframes fadeIn {
@@ -199,7 +211,7 @@ footer {
 }
 
 #map {
-    height: 500px;
+    height: 60vh; /* Adjust height dynamically for responsiveness */
     width: 100%;
     margin: 20px 0;
     border-radius: 8px;
