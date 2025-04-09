@@ -1,21 +1,22 @@
+/* General Styles */
 body {
-    font-family: Arial, sans-serif; /* Simple and clean font */
+    font-family: 'Roboto', Arial, sans-serif; /* Modern font */
     text-align: center;
-    background: #121212; /* Solid dark background */
-    color: #ffffff; /* White text for contrast */
+    background: #f4f4f4; /* Light background for better readability */
+    color: #333; /* Dark text for contrast */
     margin: 0;
     padding: 0;
-    min-height: 100vh; /* Ensure body covers full height */
+    min-height: 100vh;
     display: flex;
-    flex-direction: column; /* Stack header, content, and footer */
+    flex-direction: column;
 }
 
 /* Header Styles */
 header {
     background-color: #D71920; /* Red for Palestinian flag */
-    color: #ffffff; /* White text for contrast */
+    color: #ffffff;
     padding: 10px 20px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3); /* Shadow for depth */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
     position: sticky;
     top: 0;
     z-index: 1000;
@@ -30,7 +31,7 @@ header {
 }
 
 .site-title {
-    font-size: 1.5rem;
+    font-size: 1.8rem;
     font-weight: bold;
     margin: 0;
 }
@@ -41,7 +42,7 @@ header {
 }
 
 .nav-link {
-    color: #ffffff; /* White text for contrast */
+    color: #ffffff;
     text-decoration: none;
     font-size: 1rem;
     padding: 8px 12px;
@@ -50,7 +51,7 @@ header {
 }
 
 .nav-link:hover {
-    background-color: #005F2E; /* Darker green on hover */
+    background-color: #005F2E;
 }
 
 .menu-toggle {
@@ -62,17 +63,30 @@ header {
     cursor: pointer;
 }
 
-nav {
-    text-align: right;
-    margin: 10px 20px;
+/* Social Links */
+.social-links {
+    list-style: none;
+    padding: 0;
+    margin: 20px 0;
 }
 
-/* Responsive Design for Mobile */
+.social-links li {
+    margin: 10px 0;
+}
+
+.social-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+    vertical-align: middle;
+}
+
+/* Responsive Design */
 @media (max-width: 768px) {
     .nav-menu {
         display: none;
         flex-direction: column;
-        background-color: #D71920; /* Red for Palestinian flag */
+        background-color: #D71920;
         position: absolute;
         top: 100%;
         right: 0;
@@ -88,220 +102,8 @@ nav {
     .menu-toggle {
         display: block;
     }
-}
 
-.container {
-    flex: 1; /* Allow the container to grow and fill available space */
-    margin: 20px auto;
-    max-width: 600px;
-    padding: 20px;
-    background: #1e1e1e; /* Solid dark background for the container */
-    border-radius: 8px; /* Rounded corners */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Subtle shadow for depth */
-    color: #ffffff; /* White text inside the container */
-}
-
-.dashboard-intro {
-    font-size: 1.2rem;
-    margin-bottom: 20px;
-    color: #ffffff;
-    text-align: center;
-}
-
-h1 {
-    color: #D71920; /* Red for Palestinian flag */
-    font-size: 1.5rem;
-    margin-bottom: 20px;
-}
-
-button {
-    background-color: #007A3D; /* Green for Palestinian flag */
-    color: #ffffff; /* White text for contrast */
-    border: none;
-    padding: 10px 20px;
-    font-size: 16px;
-    cursor: pointer;
-    border-radius: 5px;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3); /* Button shadow for depth */
-}
-
-button:disabled {
-    background-color: #555555; /* Gray for disabled state */
-    cursor: not-allowed;
-    box-shadow: none; /* Remove shadow for disabled state */
-}
-
-button:hover:not(:disabled) {
-    background-color: #005F2E; /* Darker green on hover */
-    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.4); /* Enhanced shadow on hover */
-}
-
-.hidden {
-    display: none;
-}
-
-.share {
-    margin-top: 20px;
-    font-size: 14px;
-    color: #ffffff; /* White text for Palestinian theme */
-}
-
-#supportCount {
-    color: #ffffff; /* White text for Palestinian theme */
-    font-size: 1rem;
-    margin-top: 10px;
-    animation: fadeIn 1s ease-in-out;
-}
-
-.select-container {
-    margin-top: 20px;
-    font-size: 14px;
-    color: #ffffff; /* White text for Palestinian theme */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-}
-
-.select-container label {
-    margin-bottom: 10px;
-}
-
-.select-container select {
-    padding: 5px 10px;
-    font-size: 14px;
-    border: 1px solid #D71920; /* Red border for Palestinian theme */
-    border-radius: 5px;
-    background-color: #1e1e1e; /* Solid dark background for dropdown */
-    color: #ffffff; /* White text for dropdown */
-    cursor: pointer;
-}
-
-.question-container {
-    margin-top: 20px;
-    font-size: 14px;
-    color: #ffffff; /* White text for Palestinian theme */
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 15px;
-}
-
-.question-container label {
-    font-weight: bold;
-}
-
-.answer-options {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.answer-options input {
-    margin-right: 10px;
-}
-
-.answer-options label {
-    color: #ffffff; /* White text for radio button labels */
-}
-
-footer {
-    background-color: #333333; /* Dark footer background */
-    color: #ffffff; /* White text for footer */
-    text-align: center;
-    padding: 10px 20px;
-    font-size: 12px;
-    border-top: 1px solid #555555; /* Subtle border for footer */
-    box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.3); /* Shadow for depth */
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-    .container {
-        margin: 10px;
-        padding: 15px;
+    .site-title {
+        font-size: 1.5rem;
     }
-
-    h1 {
-        font-size: 1.2rem;
-    }
-
-    button {
-        font-size: 14px;
-        padding: 8px 16px;
-    }
-
-    .select-container select {
-        font-size: 12px;
-        padding: 4px 8px;
-    }
-
-    .question-container {
-        font-size: 12px;
-    }
-
-    footer {
-        font-size: 10px;
-    }
-
-    #map {
-        height: 50vh; /* Reduce map height for smaller screens */
-    }
-
-    #info h2 {
-        font-size: 1.2rem;
-    }
-
-    #supporterList li {
-        font-size: 0.9rem;
-    }
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
-}
-
-#map {
-    height: 70vh; /* Adjust height dynamically for responsiveness */
-    width: 100%;
-    margin: 20px 0;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-}
-
-#info {
-    text-align: left;
-    margin-top: 20px;
-    background: #1e1e1e;
-    padding: 15px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-}
-
-#info h2 {
-    color: #D71920; /* Red for Palestinian flag */
-    margin-bottom: 10px;
-    text-align: center;
-}
-
-#supporterList {
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
-}
-
-#supporterList li {
-    margin: 5px 0;
-    padding: 10px;
-    background: #2e2e2e;
-    border-radius: 5px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    color: #ffffff;
-    font-size: 1rem;
 }
