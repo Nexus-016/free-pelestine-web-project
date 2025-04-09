@@ -5,6 +5,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const countrySelect = document.getElementById("countrySelect");
     const countrySearch = document.getElementById("countrySearch");
     const supportSideRadios = document.querySelectorAll("input[name='supportSide']");
+    const menuToggle = document.querySelector(".menu-toggle");
+    const navMenu = document.querySelector(".nav-menu");
 
     const COUNTRIES_CACHE_KEY = "countriesCache"; // Key for caching countries in localStorage
     let countries = {}; // Global variable to store country data
@@ -170,4 +172,8 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         return null; // File does not exist
     }
+
+    menuToggle.addEventListener("click", () => {
+        navMenu.classList.toggle("active");
+    });
 });
