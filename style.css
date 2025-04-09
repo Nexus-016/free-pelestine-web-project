@@ -13,9 +13,9 @@ body {
 header {
     background-color: #D71920; /* Red for Palestinian flag */
     color: #ffffff; /* White text for contrast */
-    padding: 10px 20px;
+    padding: 15px 20px;
     text-align: center;
-    font-size: 1.2rem;
+    font-size: 1.5rem;
     font-weight: bold;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3); /* Shadow for depth */
     z-index: 10;
@@ -49,6 +49,13 @@ nav {
     border-radius: 8px; /* Rounded corners */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Subtle shadow for depth */
     color: #ffffff; /* White text inside the container */
+}
+
+.dashboard-intro {
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+    color: #ffffff;
+    text-align: center;
 }
 
 h1 {
@@ -211,7 +218,7 @@ footer {
 }
 
 #map {
-    height: 60vh; /* Adjust height dynamically for responsiveness */
+    height: 70vh; /* Adjust height dynamically for responsiveness */
     width: 100%;
     margin: 20px 0;
     border-radius: 8px;
@@ -221,22 +228,30 @@ footer {
 #info {
     text-align: left;
     margin-top: 20px;
+    background: #1e1e1e;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
 #info h2 {
     color: #D71920; /* Red for Palestinian flag */
     margin-bottom: 10px;
+    text-align: center;
 }
 
 #supporterList {
     list-style-type: none;
     padding: 0;
+    margin: 0;
 }
 
 #supporterList li {
     margin: 5px 0;
-    padding: 5px;
-    background: #1e1e1e;
+    padding: 10px;
+    background: #2e2e2e;
     border-radius: 5px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    color: #ffffff;
+    font-size: 1rem;
 }

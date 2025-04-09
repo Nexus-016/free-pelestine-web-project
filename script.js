@@ -6,11 +6,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const countrySearch = document.getElementById("countrySearch");
     const questionContainers = document.querySelectorAll(".question-container");
 
-    // GitHub token and repository details
-    const GITHUB_TOKEN = "Fine-grained personal access tokens"; // Replace with your GitHub token
-    const REPO = "Nexus-016/free-pelestine-web-project"; // Replace with your GitHub repo
-    const FILE_PATH = "supportCount.json"; // File to update in the repo
-
     // List of all countries
     const countries = [
         "Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Antigua and Barbuda", "Argentina", "Armenia",
@@ -36,6 +31,17 @@ document.addEventListener("DOMContentLoaded", () => {
         "Ukraine", "United Arab Emirates", "United Kingdom", "United States", "Uruguay", "Uzbekistan", "Vanuatu",
         "Vatican City", "Venezuela", "Vietnam", "Yemen", "Zambia", "Zimbabwe"
     ];
+
+    // Check if the user has already voted
+    function checkIfVoted() {
+        const hasVoted = localStorage.getItem("hasVoted");
+        if (hasVoted) {
+            supportButton.disabled = true;
+            supportButton.textContent = "You have already voted";
+        }
+    }
+
+    checkIfVoted(); // Check on page load
 
     // Populate country dropdown
     function populateCountries(filteredCountries = countries) {
@@ -75,7 +81,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         // Enable or disable the support button based on the validation
-        supportButton.disabled = !allQuestionsCorrect;
+        supportButton.disabled = !allQuestionsCorrect || localStorage.getItem("hasVoted");
 
         // Debugging: Log the validation status
         console.log("Validation status:", allQuestionsCorrect);
@@ -91,19 +97,28 @@ document.addEventListener("DOMContentLoaded", () => {
 
     supportButton.addEventListener("click", () => {
         const selectedCountry = countrySelect.value;
-        const answers = Array.from(questionContainers).map((container) => {
-            const selectedOption = container.querySelector("input[type='radio']:checked");
-            return selectedOption ? selectedOption.value : null;
-        });
 
-        // Increment supporter count in localStorage
+        // Fetch existing supporter data from localStorage
+        const supporterData = JSON.parse(localStorage.getItem("supporterData")) || {};
+
+        // Increment the support count for the selected country
+        supporterData[selectedCountry] = (supporterData[selectedCountry] || 0) + 1;
+
+        // Save updated data back to localStorage
+        localStorage.setItem("supporterData", JSON.stringify(supporterData));
+
+        console.log(`Support recorded for: ${selectedCountry}`);
+        console.log("Updated supporter data:", supporterData);
+
+        // Increment total supporter count in localStorage
         const currentCount = parseInt(localStorage.getItem("supportCount")) || 0;
         localStorage.setItem("supportCount", currentCount + 1);
 
-        console.log(`Support recorded from: ${selectedCountry}`);
-        console.log("Answers:", answers);
+        // Mark the user as having voted
+        localStorage.setItem("hasVoted", "true");
 
-        supportButton.classList.add("clicked");
+        supportButton.disabled = true;
+        supportButton.textContent = "You have already voted";
         thankYouMessage.classList.remove("hidden");
         updateSupportCount();
     });

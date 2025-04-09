@@ -9,13 +9,12 @@
 </head>
 <body>
     <header>
-        <nav>
-            <a href="index.html" class="nav-link">Home</a> <!-- Link back to home -->
-        </nav>
-        <h1>Dashboard - Voices for Palestine</h1>
+        <h1>Supporter Dashboard</h1>
     </header>
     <div class="container">
-        <p>View global support for Palestine. The brighter the country, the more supporters it has.</p>
+        <p class="dashboard-intro">
+            Welcome to the global supporter dashboard. The brighter the country, the more supporters it has.
+        </p>
         <div id="map" style="height: 500px; border-radius: 8px; margin-bottom: 20px;"></div>
         <div id="info">
             <h2>Supporter Information</h2>
@@ -29,5 +28,12 @@
     </footer>
     <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
     <script src="dashboard.js" type="module"></script>
+    <script>
+        // Disable back button functionality
+        history.pushState(null, null, location.href);
+        window.onpopstate = function () {
+            history.go(1);
+        };
+    </script>
 </body>
 </html>
