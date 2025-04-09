@@ -25,10 +25,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 const content = atob(data.content); // Decode base64 content
                 supporterData = JSON.parse(content);
                 updateSupportCount();
+                populateCountries(Object.keys(supporterData)); // Populate dropdown after fetching data
                 console.log("Fetched supporter data from GitHub:", supporterData);
             } else if (response.status === 404) {
                 console.warn("Supporter data file not found on GitHub. Initializing empty data.");
                 supporterData = {};
+                populateCountries([]); // Populate dropdown with no countries
             } else {
                 console.error("Failed to fetch supporter data from GitHub:", await response.json());
             }
@@ -111,14 +113,21 @@ document.addEventListener("DOMContentLoaded", () => {
     window.resetVotingStatus = resetVotingStatus;
 
     // Populate country dropdown
-    function populateCountries(filteredCountries = Object.keys(supporterData)) {
+    function populateCountries(filteredCountries = []) {
         countrySelect.innerHTML = ""; // Clear existing options
-        filteredCountries.forEach((country) => {
+        if (filteredCountries.length === 0) {
             const option = document.createElement("option");
-            option.value = country;
-            option.textContent = country;
+            option.value = "";
+            option.textContent = "No countries available";
             countrySelect.appendChild(option);
-        });
+        } else {
+            filteredCountries.forEach((country) => {
+                const option = document.createElement("option");
+                option.value = country;
+                option.textContent = country;
+                countrySelect.appendChild(option);
+            });
+        }
     }
 
     // Update the supporter count display
@@ -168,6 +177,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Push updated data to GitHub
         await pushToGitHub();
+    });
+
+    // Search functionality for countries
+    countrySearch.addEventListener("input", () => {
+        const searchTerm = countrySearch.value.toLowerCase();
+        const filteredCountries = Object.keys(supporterData).filter((country) =>
+            country.toLowerCase().includes(searchTerm)
+        );
+        populateCountries(filteredCountries);
     });
 
     // Fetch supporter data from GitHub on page load
