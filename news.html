@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Latest News on Palestine</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="index.html" class="nav-link">Home</a>
+            <a href="dashboard.html" class="nav-link">Dashboard</a>
+        </nav>
+    </header>
+    <div class="container">
+        <h1>Latest News on Palestine</h1>
+        <div id="news-container">
+            <h2>Loading news...</h2>
+        </div>
+    </div>
+    <footer>
+        <p>Voices for Palestine | Powered by Humanity</p>
+    </footer>
+    <script>
+        const apiKey = 'YOUR_API_KEY_HERE'; // Replace with your GNews API key
+        const url = `https://gnews.io/api/v4/search?q=palestine&lang=en&max=5&apikey=${apiKey}`;
+
+        fetch(url)
+            .then(res => res.json())
+            .then(data => {
+                const container = document.getElementById('news-container');
+                container.innerHTML = ''; // Clear the loading message
+                data.articles.forEach(article => {
+                    const div = document.createElement('div');
+                    div.style.marginBottom = "20px";
+                    div.innerHTML = `
+                        <h3><a href="${article.url}" target="_blank">${article.title}</a></h3>
+                        <p>${article.description || ''}</p>
+                        <small>${new Date(article.publishedAt).toLocaleString()}</small>
+                        <hr>
+                    `;
+                    container.appendChild(div);
+                });
+            })
+            .catch(err => {
+                document.getElementById('news-container').innerHTML += "<p>Failed to load news.</p>";
+                console.error("News fetch error:", err);
+            });
+    </script>
+</body>
+</html>

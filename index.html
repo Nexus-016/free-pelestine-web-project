@@ -9,7 +9,8 @@
 <body>
     <header>
         <nav>
-            <a href="dashboard.html" class="nav-link">Dashboard</a> <!-- Link to the dashboard -->
+            <a href="dashboard.html" class="nav-link">Dashboard</a>
+            <a href="news.html" class="nav-link">News</a> <!-- Link to the news page -->
         </nav>
     </header>
     <div class="container">
@@ -24,38 +25,10 @@
             </select>
         </div>
         <div class="question-container">
-            <label>1. Which side do you support?</label>
+            <label>Which side do you support?</label>
             <div class="answer-options">
-                <label><input type="radio" name="question1" value="Palestine"> Palestine</label>
-                <label><input type="radio" name="question1" value="Israel"> Israel</label>
-            </div>
-        </div>
-        <div class="question-container">
-            <label>2. Do you believe in the right to worship freely?</label>
-            <div class="answer-options">            localStorage.removeItem("hasVoted");
-                <label><input type="radio" name="question2" value="Yes"> Yes</label>
-                <label><input type="radio" name="question2" value="No"> No</label>
-            </div>
-        </div>
-        <div class="question-container">
-            <label>3. Should Al-Aqsa Mosque be protected?</label>
-            <div class="answer-options">
-                <label><input type="radio" name="question3" value="Yes"> Yes</label>
-                <label><input type="radio" name="question3" value="No"> No</label>
-            </div>
-        </div>
-        <div class="question-container">
-            <label>4. Do you support helping the oppressed?</label>
-            <div class="answer-options">
-                <label><input type="radio" name="question4" value="Yes"> Yes</label>
-                <label><input type="radio" name="question4" value="No"> No</label>
-            </div>
-        </div>
-        <div class="question-container">
-            <label>5. Should peace and justice prevail in Palestine?</label>
-            <div class="answer-options">
-                <label><input type="radio" name="question5" value="Yes"> Yes</label>
-                <label><input type="radio" name="question5" value="No"> No</label>
+                <label><input type="radio" name="supportSide" value="Palestine"> Palestine</label>
+                <label><input type="radio" name="supportSide" value="Israel"> Israel</label>
             </div>
         </div>
         <button id="supportButton" disabled>
@@ -65,7 +38,6 @@
         <p id="supportCount">Loading...</p>
         <div class="share">
             <p>Share to amplify. Your voice matters.</p>
-            <!-- Social share buttons can be added here -->
         </div>
         <div class="test-tools">
             <button id="resetButton">Reset Voting Status for test</button>

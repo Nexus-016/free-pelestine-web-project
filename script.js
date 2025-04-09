@@ -5,6 +5,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const countrySelect = document.getElementById("countrySelect");
     const countrySearch = document.getElementById("countrySearch");
     const questionContainers = document.querySelectorAll(".question-container");
+    const supportSideRadios = document.querySelectorAll("input[name='supportSide']");
 
     // GitHub token and repository details
     const GITHUB_TOKEN = "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"; // Replace with your GitHub token
@@ -135,6 +136,17 @@ document.addEventListener("DOMContentLoaded", () => {
         const totalSupporters = Object.values(supporterData).reduce((sum, count) => sum + count, 0);
         supportCount.textContent = `${totalSupporters} people have supported so far.`;
     }
+
+    // Enable the button only if "Palestine" is selected
+    supportSideRadios.forEach((radio) => {
+        radio.addEventListener("change", () => {
+            if (radio.value === "Palestine" && radio.checked) {
+                supportButton.disabled = false;
+            } else {
+                supportButton.disabled = true;
+            }
+        });
+    });
 
     // Form validation logic
     function validateForm() {

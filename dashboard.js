@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Fetch country data from the new folder
     async function fetchCountryData() {
         try {
-            const response = await fetch("country/countries.json");
+            const response = await fetch("/country/countries.json"); // Ensure the path starts with "/"
             if (response.ok) {
                 countries = await response.json();
                 console.log("Fetched country data:", countries);
