@@ -67,6 +67,28 @@ document.addEventListener("DOMContentLoaded", () => {
 
     updateSupportCount();
 
+    // Form validation logic
+    function validateForm() {
+        const allQuestionsCorrect = Array.from(questionContainers).every((container) => {
+            const selectedOption = container.querySelector("input[type='radio']:checked");
+            return selectedOption !== null; // Ensure an option is selected
+        });
+
+        // Enable or disable the support button based on the validation
+        supportButton.disabled = !allQuestionsCorrect;
+
+        // Debugging: Log the validation status
+        console.log("Validation status:", allQuestionsCorrect);
+    }
+
+    // Add event listeners for validation
+    questionContainers.forEach((container) => {
+        const radioButtons = container.querySelectorAll("input[type='radio']");
+        radioButtons.forEach((radio) => {
+            radio.addEventListener("change", validateForm); // Trigger validation on change
+        });
+    });
+
     supportButton.addEventListener("click", () => {
         const selectedCountry = countrySelect.value;
         const answers = Array.from(questionContainers).map((container) => {
@@ -84,51 +106,5 @@ document.addEventListener("DOMContentLoaded", () => {
         supportButton.classList.add("clicked");
         thankYouMessage.classList.remove("hidden");
         updateSupportCount();
-
-        // Push updates to GitHub
-        pushToGitHub(currentCount + 1);
     });
-
-    // Push updates to GitHub
-    async function pushToGitHub(newCount) {
-        const content = JSON.stringify({ supportCount: newCount }, null, 2);
-        const encodedContent = btoa(content);
-
-        try {
-            const response = await fetch(`https://api.github.com/repos/${REPO}/contents/${FILE_PATH}`, {
-                method: "PUT",
-                headers: {
-                    "Authorization": `token ${GITHUB_TOKEN}`,
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    message: "Update support count",
-                    content: encodedContent,
-                    sha: await getFileSHA(REPO, FILE_PATH)
-                })
-            });
-
-            if (response.ok) {
-                console.log("Support count pushed to GitHub.");
-            } else {
-                console.error("Failed to push to GitHub:", await response.json());
-            }
-        } catch (error) {
-            console.error("Error pushing to GitHub:", error);
-        }
-    }
-
-    // Get the SHA of the file in the GitHub repo
-    async function getFileSHA(repo, filePath) {
-        const response = await fetch(`https://api.github.com/repos/${repo}/contents/${filePath}`, {
-            headers: { "Authorization": `token ${GITHUB_TOKEN}` }
-        });
-
-        if (response.ok) {
-            const data = await response.json();
-            return data.sha;
-        }
-
-        return null; // File does not exist
-    }
 });
