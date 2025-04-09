@@ -7,6 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const supportSideRadios = document.querySelectorAll("input[name='supportSide']");
     const menuToggle = document.querySelector(".menu-toggle");
     const navMenu = document.querySelector(".nav-menu");
+    const navLinks = document.querySelectorAll(".nav-link");
 
     const COUNTRIES_CACHE_KEY = "countriesCache"; // Key for caching countries in localStorage
     let countries = {}; // Global variable to store country data
@@ -38,6 +39,38 @@ document.addEventListener("DOMContentLoaded", () => {
             console.error("Error preloading country data:", error);
         }
     }
+
+    // Populate country dropdown
+    function populateCountries(filteredCountries = []) {
+        countrySelect.innerHTML = ""; // Clear existing options
+        if (filteredCountries.length === 0) {
+            const option = document.createElement("option");
+            option.value = "";
+            option.textContent = "No countries available";
+            countrySelect.appendChild(option);
+        } else {
+            filteredCountries.forEach((country) => {
+                const option = document.createElement("option");
+                option.value = country;
+                option.textContent = country;
+                countrySelect.appendChild(option);
+            });
+        }
+    }
+
+    // Search functionality for countries
+    countrySearch.addEventListener("input", () => {
+        const searchTerm = countrySearch.value.toLowerCase();
+        const filteredCountries = Object.keys(countries).filter((country) =>
+            country.toLowerCase().includes(searchTerm)
+        );
+        populateCountries(filteredCountries);
+    });
+
+    // Fetch and cache country data, then populate the dropdown
+    preloadCountryData().then(() => {
+        populateCountries(Object.keys(countries));
+    });
 
     // Fetch supporter data from GitHub
     async function fetchSupporterData() {
@@ -80,31 +113,8 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    // Fetch and cache country data, then populate the dropdown
-    preloadCountryData().then(() => {
-        populateCountries(Object.keys(countries));
-    });
-
     // Fetch supporter data from GitHub on page load
     fetchSupporterData();
-
-    // Populate country dropdown
-    function populateCountries(filteredCountries = []) {
-        countrySelect.innerHTML = ""; // Clear existing options
-        if (filteredCountries.length === 0) {
-            const option = document.createElement("option");
-            option.value = "";
-            option.textContent = "No countries available";
-            countrySelect.appendChild(option);
-        } else {
-            filteredCountries.forEach((country) => {
-                const option = document.createElement("option");
-                option.value = country;
-                option.textContent = country;
-                countrySelect.appendChild(option);
-            });
-        }
-    }
 
     supportButton.addEventListener("click", async () => {
         const selectedCountry = countrySelect.value;
@@ -175,5 +185,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     menuToggle.addEventListener("click", () => {
         navMenu.classList.toggle("active");
+    });
+
+    // Close navigation menu when a link is clicked
+    navLinks.forEach((link) => {
+        link.addEventListener("click", () => {
+            navMenu.classList.remove("active");
+        });
     });
 });

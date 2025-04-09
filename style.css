@@ -54,6 +54,13 @@ header {
     background-color: #005F2E; /* Darker green for hover */
 }
 
+/* Highlight active navigation link */
+.nav-link.active {
+    background-color: #005F2E; /* Darker green for active link */
+    font-weight: bold;
+    border: 1px solid #ffffff; /* Add a subtle border for emphasis */
+}
+
 .menu-toggle {
     display: none;
     background: none;
@@ -73,6 +80,67 @@ header {
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
     color: #ffffff;
+}
+
+/* Fix text alignment and spacing */
+.select-container {
+    margin-top: 20px;
+    font-size: 14px;
+    color: #ffffff; /* White text for Palestinian theme */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 10px; /* Add spacing between elements */
+}
+
+.select-container label {
+    margin-bottom: 5px;
+    font-size: 1rem; /* Ensure readable font size */
+}
+
+.select-container input,
+.select-container select {
+    padding: 8px 12px;
+    font-size: 1rem;
+    border: 1px solid #D71920; /* Red border for Palestinian theme */
+    border-radius: 5px;
+    background-color: #1e1e1e; /* Dark background for inputs */
+    color: #ffffff; /* White text for inputs */
+    width: 100%; /* Ensure full width for better alignment */
+    max-width: 400px; /* Limit maximum width */
+    box-sizing: border-box; /* Include padding in width */
+}
+
+/* Fix text alignment in question container */
+.question-container {
+    margin-top: 20px;
+    font-size: 14px;
+    color: #ffffff; /* White text for Palestinian theme */
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px; /* Add spacing between elements */
+}
+
+.question-container label {
+    font-weight: bold;
+    font-size: 1rem; /* Ensure readable font size */
+}
+
+.answer-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* Add spacing between radio buttons */
+}
+
+.answer-options input {
+    margin-right: 10px;
+}
+
+.answer-options label {
+    color: #ffffff; /* White text for radio button labels */
+    font-size: 1rem; /* Ensure readable font size */
 }
 
 /* Buttons */
