@@ -183,18 +183,20 @@ document.addEventListener("DOMContentLoaded", () => {
         return null; // File does not exist
     }
 
-    menuToggle.addEventListener("click", () => {
-        navMenu.classList.toggle("active");
-    });
-
-    // Close navigation menu and highlight the active tab when a link is clicked
-    navLinks.forEach((link) => {
-        link.addEventListener("click", () => {
-            navMenu.classList.remove("active");
-            navLinks.forEach((navLink) => navLink.classList.remove("active")); // Remove active class from all links
-            link.classList.add("active"); // Add active class to the clicked link
+    // Ensure menuToggle and navMenu exist before adding event listeners
+    if (menuToggle && navMenu) {
+        // Toggle navigation menu on mobile
+        menuToggle.addEventListener("click", () => {
+            navMenu.classList.toggle("active");
         });
-    });
+
+        // Close navigation menu when a link is clicked
+        navLinks.forEach((link) => {
+            link.addEventListener("click", () => {
+                navMenu.classList.remove("active");
+            });
+        });
+    }
 
     // Highlight the active tab based on the current URL
     const currentPath = window.location.pathname.split("/").pop();
