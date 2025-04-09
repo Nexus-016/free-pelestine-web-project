@@ -1,3 +1,6 @@
+import dotenv from 'dotenv';
+dotenv.config();
+
 document.addEventListener("DOMContentLoaded", () => {
     const supportButton = document.getElementById("supportButton");
     const thankYouMessage = document.getElementById("thankYouMessage");
@@ -86,7 +89,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Push updates to GitHub
     async function pushToGitHub(newCount) {
-        const token = "YOUR_GITHUB_PERSONAL_ACCESS_TOKEN"; // Replace with your GitHub token
+        const token = process.env.GITHUB_TOKEN; // Use token from .env
         const repo = "YOUR_GITHUB_USERNAME/YOUR_REPOSITORY_NAME"; // Replace with your GitHub repo
         const filePath = "supportCount.json"; // File to update in the repo
 
@@ -119,8 +122,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Get the SHA of the file in the GitHub repo
     async function getFileSHA(repo, filePath) {
+        const token = process.env.GITHUB_TOKEN; // Use token from .env
         const response = await fetch(`https://api.github.com/repos/${repo}/contents/${filePath}`, {
-            headers: { "Authorization": `token YOUR_GITHUB_PERSONAL_ACCESS_TOKEN` }
+            headers: { "Authorization": `token ${token}` }
         });
 
         if (response.ok) {
