@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voices for Palestine</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Are you human? Prove it by standing with Palestine.</h1>
+        <p>Join thousands worldwide showing support. One click. One voice.</p>
+        <div class="select-container">
+            <label for="countrySearch">Search your country:</label>
+            <input type="text" id="countrySearch" placeholder="Type to search..." />
+            <label for="countrySelect">Select your country:</label>
+            <select id="countrySelect">
+                <!-- Countries will be dynamically populated -->
+            </select>
+        </div>
+        <div class="question-container">
+            <label>1. Which side do you support?</label>
+            <div class="answer-options">
+                <label><input type="radio" name="question1" value="Palestine"> Palestine</label>
+                <label><input type="radio" name="question1" value="Israel"> Israel</label>
+            </div>
+        </div>
+        <div class="question-container">
+            <label>2. Do you believe in the right to worship freely?</label>
+            <div class="answer-options">
+                <label><input type="radio" name="question2" value="Yes"> Yes</label>
+                <label><input type="radio" name="question2" value="No"> No</label>
+            </div>
+        </div>
+        <div class="question-container">
+            <label>3. Should Al-Aqsa Mosque be protected?</label>
+            <div class="answer-options">
+                <label><input type="radio" name="question3" value="Yes"> Yes</label>
+                <label><input type="radio" name="question3" value="No"> No</label>
+            </div>
+        </div>
+        <div class="question-container">
+            <label>4. Do you support helping the oppressed?</label>
+            <div class="answer-options">
+                <label><input type="radio" name="question4" value="Yes"> Yes</label>
+                <label><input type="radio" name="question4" value="No"> No</label>
+            </div>
+        </div>
+        <div class="question-container">
+            <label>5. Should peace and justice prevail in Palestine?</label>
+            <div class="answer-options">
+                <label><input type="radio" name="question5" value="Yes"> Yes</label>
+                <label><input type="radio" name="question5" value="No"> No</label>
+            </div>
+        </div>
+        <button id="supportButton" disabled>
+            <span>I Support Palestine</span>
+        </button>
+        <p id="thankYouMessage" class="hidden">Thank you. Your support has been recorded.</p>
+        <p id="supportCount">Loading...</p>
+        <div class="share">
+            <p>Share to amplify. Your voice matters.</p>
+            <!-- Social share buttons can be added here -->
+        </div>
+    </div>
+    <footer>
+        <p>Voices for Palestine | Powered by Humanity</p>
+    </footer>
+    <script src="firebase-config.js" type="module"></script>
+    <script src="script.js" type="module"></script>
+</body>
+</html>
