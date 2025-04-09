@@ -39,7 +39,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Push supporter data to GitHub
     async function pushToGitHub() {
-        const content = JSON.stringify(supporterData, null, 2);
+        // Fetch the latest data from GitHub to ensure no data is overwritten
+        await fetchSupporterData();
+
+        // Merge local data with fetched data
+        const mergedData = { ...supporterData, ...JSON.parse(localStorage.getItem("supporterData") || "{}") };
+
+        const content = JSON.stringify(mergedData, null, 2);
         const encodedContent = btoa(content);
 
         try {
@@ -58,6 +64,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (response.ok) {
                 console.log("Supporter data pushed to GitHub.");
+                supporterData = mergedData; // Update local data with merged data
             } else {
                 console.error("Failed to push to GitHub:", await response.json());
             }
