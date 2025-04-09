@@ -4,17 +4,16 @@ document.addEventListener("DOMContentLoaded", () => {
     const supportCount = document.getElementById("supportCount");
     const countrySelect = document.getElementById("countrySelect");
     const countrySearch = document.getElementById("countrySearch");
-    const questionContainers = document.querySelectorAll(".question-container");
     const supportSideRadios = document.querySelectorAll("input[name='supportSide']");
+
+    const COUNTRIES_CACHE_KEY = "countriesCache"; // Key for caching countries in localStorage
+    let countries = {}; // Global variable to store country data
+    let supporterData = {}; // Global variable to store supporter data
 
     // GitHub token and repository details
     const GITHUB_TOKEN = "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"; // Replace with your GitHub token
     const REPO = "Nexus-016/free-pelestine-web-project"; // Replace with your GitHub repo
     const FILE_PATH = "supporterData.json"; // File to update in the repo
-
-    const COUNTRIES_CACHE_KEY = "countriesCache"; // Key for caching countries in localStorage
-    let countries = {}; // Global variable to store country data
-    let supporterData = {}; // Global variable to store supporter data
 
     // Preload and cache country data
     async function preloadCountryData() {
@@ -62,15 +61,73 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
+    // Update the supporter count display
+    function updateSupportCount() {
+        const totalSupporters = Object.values(supporterData).reduce((sum, count) => sum + count, 0);
+        supportCount.textContent = `${totalSupporters} people have supported so far.`;
+    }
+
+    // Enable the button only if "Palestine" is selected
+    supportSideRadios.forEach((radio) => {
+        radio.addEventListener("change", () => {
+            if (radio.value === "Palestine" && radio.checked) {
+                supportButton.disabled = false;
+            } else {
+                supportButton.disabled = true;
+            }
+        });
+    });
+
+    // Fetch and cache country data, then populate the dropdown
+    preloadCountryData().then(() => {
+        populateCountries(Object.keys(countries));
+    });
+
+    // Fetch supporter data from GitHub on page load
+    fetchSupporterData();
+
+    // Populate country dropdown
+    function populateCountries(filteredCountries = []) {
+        countrySelect.innerHTML = ""; // Clear existing options
+        if (filteredCountries.length === 0) {
+            const option = document.createElement("option");
+            option.value = "";
+            option.textContent = "No countries available";
+            countrySelect.appendChild(option);
+        } else {
+            filteredCountries.forEach((country) => {
+                const option = document.createElement("option");
+                option.value = country;
+                option.textContent = country;
+                countrySelect.appendChild(option);
+            });
+        }
+    }
+
+    supportButton.addEventListener("click", async () => {
+        const selectedCountry = countrySelect.value;
+
+        // Increment the support count for the selected country
+        supporterData[selectedCountry] = (supporterData[selectedCountry] || 0) + 1;
+
+        console.log(`Support recorded for: ${selectedCountry}`);
+        console.log("Updated supporter data:", supporterData);
+
+        // Mark the user as having voted
+        localStorage.setItem("hasVoted", "true");
+
+        supportButton.disabled = true;
+        supportButton.textContent = "You have already voted";
+        thankYouMessage.classList.remove("hidden");
+        updateSupportCount();
+
+        // Push updated data to GitHub
+        await pushToGitHub();
+    });
+
     // Push supporter data to GitHub
     async function pushToGitHub() {
-        // Fetch the latest data from GitHub to ensure no data is overwritten
-        await fetchSupporterData();
-
-        // Merge local data with fetched data
-        const mergedData = { ...supporterData, ...JSON.parse(localStorage.getItem("supporterData") || "{}") };
-
-        const content = JSON.stringify(mergedData, null, 2);
+        const content = JSON.stringify(supporterData, null, 2);
         const encodedContent = btoa(content);
 
         try {
@@ -89,7 +146,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (response.ok) {
                 console.log("Supporter data pushed to GitHub.");
-                supporterData = mergedData; // Update local data with merged data
             } else {
                 console.error("Failed to push to GitHub:", await response.json());
             }
@@ -114,137 +170,4 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         return null; // File does not exist
     }
-
-    // Check if the user has already voted
-    function checkIfVoted() {
-        const hasVoted = localStorage.getItem("hasVoted");
-        if (hasVoted) {
-            supportButton.disabled = true;
-            supportButton.textContent = "You have already voted";
-        }
-    }
-
-    checkIfVoted(); // Check on page load
-
-    // Temporary function to reset voting status for testing
-    function resetVotingStatus() {
-        localStorage.removeItem("hasVoted");
-        console.log("Voting status has been reset. You can now vote again.");
-    }
-
-    // Call this function in the browser console to reset voting status
-    window.resetVotingStatus = resetVotingStatus;
-
-    // Populate country dropdown
-    function populateCountries(filteredCountries = []) {
-        countrySelect.innerHTML = ""; // Clear existing options
-        if (filteredCountries.length === 0) {
-            const option = document.createElement("option");
-            option.value = "";
-            option.textContent = "No countries available";
-            countrySelect.appendChild(option);
-        } else {
-            filteredCountries.forEach((country) => {
-                const option = document.createElement("option");
-                option.value = country;
-                option.textContent = country;
-                countrySelect.appendChild(option);
-            });
-        }
-    }
-
-    // Update the supporter count display
-    function updateSupportCount() {
-        const totalSupporters = Object.values(supporterData).reduce((sum, count) => sum + count, 0);
-        supportCount.textContent = `${totalSupporters} people have supported so far.`;
-    }
-
-    // Enable the button only if "Palestine" is selected
-    supportSideRadios.forEach((radio) => {
-        radio.addEventListener("change", () => {
-            if (radio.value === "Palestine" && radio.checked) {
-                supportButton.disabled = false;
-            } else {
-                supportButton.disabled = true;
-            }
-        });
-    });
-
-    // Form validation logic
-    function validateForm() {
-        const allQuestionsCorrect = Array.from(questionContainers).every((container) => {
-            const selectedOption = container.querySelector("input[type='radio']:checked");
-            return selectedOption !== null; // Ensure an option is selected
-        });
-
-        // Enable or disable the support button based on the validation
-        supportButton.disabled = !allQuestionsCorrect || localStorage.getItem("hasVoted");
-
-        // Debugging: Log the validation status
-        console.log("Validation status:", allQuestionsCorrect);
-    }
-
-    // Add event listeners for validation
-    questionContainers.forEach((container) => {
-        const radioButtons = container.querySelectorAll("input[type='radio']");
-        radioButtons.forEach((radio) => {
-            radio.addEventListener("change", validateForm); // Trigger validation on change
-        });
-    });
-
-    supportButton.addEventListener("click", async () => {
-        const selectedCountry = countrySelect.value;
-
-        // Increment the support count for the selected country
-        supporterData[selectedCountry] = (supporterData[selectedCountry] || 0) + 1;
-
-        console.log(`Support recorded for: ${selectedCountry}`);
-        console.log("Updated supporter data:", supporterData);
-
-        // Mark the user as having voted
-        localStorage.setItem("hasVoted", "true");
-
-        supportButton.disabled = true;
-        supportButton.textContent = "You have already voted";
-        thankYouMessage.classList.remove("hidden");
-        updateSupportCount();
-
-        // Push updated data to GitHub
-        await pushToGitHub();
-    });
-
-    // Search functionality for countries
-    countrySearch.addEventListener("input", () => {
-        const searchTerm = countrySearch.value.toLowerCase();
-        const filteredCountries = Object.keys(countries).filter((country) =>
-            country.toLowerCase().includes(searchTerm)
-        );
-        countrySelect.innerHTML = ""; // Clear existing options
-        if (filteredCountries.length === 0) {
-            const option = document.createElement("option");
-            option.value = "";
-            option.textContent = "No countries available";
-            countrySelect.appendChild(option);
-        } else {
-            filteredCountries.forEach((country) => {
-                const option = document.createElement("option");
-                option.value = country;
-                option.textContent = country;
-                countrySelect.appendChild(option);
-            });
-        }
-    });
-
-    // Fetch supporter data from GitHub on page load
-    fetchSupporterData();
-
-    // Fetch and cache country data, then populate the dropdown
-    preloadCountryData().then(() => {
-        populateCountries(Object.keys(countries));
-    });
-
-    // Push data to GitHub every 30 minutes
-    setInterval(() => {
-        pushToGitHub();
-    }, 30 * 60 * 1000); // 30 minutes in milliseconds
 });
