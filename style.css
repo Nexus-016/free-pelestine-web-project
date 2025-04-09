@@ -2,8 +2,8 @@
 body {
     font-family: 'Roboto', Arial, sans-serif; /* Modern font */
     text-align: center;
-    background: #f4f4f4; /* Light background for better readability */
-    color: #333; /* Dark text for contrast */
+    background: #000000; /* Black background for dark theme */
+    color: #ffffff; /* White text for contrast */
     margin: 0;
     padding: 0;
     min-height: 100vh;
@@ -51,7 +51,7 @@ header {
 }
 
 .nav-link:hover {
-    background-color: #005F2E;
+    background-color: #005F2E; /* Darker green for hover */
 }
 
 .menu-toggle {
@@ -63,22 +63,52 @@ header {
     cursor: pointer;
 }
 
-/* Social Links */
-.social-links {
-    list-style: none;
-    padding: 0;
-    margin: 20px 0;
+/* Container Styles */
+.container {
+    flex: 1;
+    margin: 20px auto;
+    max-width: 600px;
+    padding: 20px;
+    background: #1e1e1e; /* Dark gray background for the container */
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    color: #ffffff;
 }
 
-.social-links li {
-    margin: 10px 0;
+/* Buttons */
+button {
+    background-color: #007A3D; /* Green for Palestinian flag */
+    color: #ffffff;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
 }
 
-.social-icon {
-    width: 20px;
-    height: 20px;
-    margin-right: 10px;
-    vertical-align: middle;
+button:disabled {
+    background-color: #555555; /* Gray for disabled state */
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+button:hover:not(:disabled) {
+    background-color: #005F2E; /* Darker green for hover */
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.4);
+}
+
+/* Footer Styles */
+footer {
+    background-color: #333333; /* Dark footer background */
+    color: #ffffff;
+    text-align: center;
+    padding: 10px 20px;
+    font-size: 12px;
+    border-top: 1px solid #555555; /* Add subtle border for footer */
+    box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.3);
+    margin-top: auto;
 }
 
 /* Responsive Design */
@@ -105,5 +135,14 @@ header {
 
     .site-title {
         font-size: 1.5rem;
+    }
+
+    .container {
+        margin: 10px;
+        padding: 15px;
+    }
+
+    footer {
+        font-size: 10px;
     }
 }
