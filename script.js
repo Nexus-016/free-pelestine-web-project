@@ -101,6 +101,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
     checkIfVoted(); // Check on page load
 
+    // Temporary function to reset voting status for testing
+    function resetVotingStatus() {
+        localStorage.removeItem("hasVoted");
+        console.log("Voting status has been reset. You can now vote again.");
+    }
+
+    // Call this function in the browser console to reset voting status
+    window.resetVotingStatus = resetVotingStatus;
+
     // Populate country dropdown
     function populateCountries(filteredCountries = Object.keys(supporterData)) {
         countrySelect.innerHTML = ""; // Clear existing options
