@@ -6,6 +6,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const countrySearch = document.getElementById("countrySearch");
     const questionContainers = document.querySelectorAll(".question-container");
 
+    // GitHub token and repository details
+    const GITHUB_TOKEN = "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"; // Replace with your GitHub token
+    const REPO = "Nexus-016/free-pelestine-web-project"; // Replace with your GitHub repo
+    const FILE_PATH = "supporterData.json"; // File to update in the repo
+
     // List of all countries
     const countries = [
         "Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Antigua and Barbuda", "Argentina", "Armenia",
@@ -121,5 +126,57 @@ document.addEventListener("DOMContentLoaded", () => {
         supportButton.textContent = "You have already voted";
         thankYouMessage.classList.remove("hidden");
         updateSupportCount();
+
+        // Push updated data to GitHub
+        pushToGitHub(supporterData);
     });
+
+    // Push supporter data to GitHub
+    async function pushToGitHub(data) {
+        const content = JSON.stringify(data, null, 2);
+        const encodedContent = btoa(content);
+
+        try {
+            const response = await fetch(`https://api.github.com/repos/${REPO}/contents/${FILE_PATH}`, {
+                method: "PUT",
+                headers: {
+                    "Authorization": `token ${GITHUB_TOKEN}`,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    message: "Update supporter data",
+                    content: encodedContent,
+                    sha: await getFileSHA(REPO, FILE_PATH)
+                })
+            });
+
+            if (response.ok) {
+                console.log("Supporter data pushed to GitHub.");
+            } else {
+                console.error("Failed to push to GitHub:", await response.json());
+            }
+        } catch (error) {
+            console.error("Error pushing to GitHub:", error);
+        }
+    }
+
+    // Get the SHA of the file in the GitHub repo
+    async function getFileSHA(repo, filePath) {
+        const response = await fetch(`https://api.github.com/repos/${repo}/contents/${filePath}`, {
+            headers: { "Authorization": `token ${GITHUB_TOKEN}` }
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            return data.sha;
+        }
+
+        return null; // File does not exist
+    }
+
+    // Push data to GitHub every 30 minutes
+    setInterval(() => {
+        const supporterData = JSON.parse(localStorage.getItem("supporterData")) || {};
+        pushToGitHub(supporterData);
+    }, 30 * 60 * 1000); // 30 minutes in milliseconds
 });
