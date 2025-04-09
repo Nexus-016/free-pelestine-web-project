@@ -12,7 +12,31 @@ document.addEventListener("DOMContentLoaded", () => {
     const REPO = "Nexus-016/free-pelestine-web-project"; // Replace with your GitHub repo
     const FILE_PATH = "supporterData.json"; // File to update in the repo
 
+    const COUNTRIES_CACHE_KEY = "countriesCache"; // Key for caching countries in localStorage
+    let countries = {}; // Global variable to store country data
     let supporterData = {}; // Global variable to store supporter data
+
+    // Preload and cache country data
+    async function preloadCountryData() {
+        try {
+            const cachedCountries = localStorage.getItem(COUNTRIES_CACHE_KEY);
+            if (cachedCountries) {
+                countries = JSON.parse(cachedCountries);
+                console.log("Loaded countries from cache:", countries);
+            } else {
+                const response = await fetch("/country/countries.json");
+                if (response.ok) {
+                    countries = await response.json();
+                    localStorage.setItem(COUNTRIES_CACHE_KEY, JSON.stringify(countries)); // Cache the data
+                    console.log("Fetched and cached country data:", countries);
+                } else {
+                    console.error("Failed to fetch country data:", response.status);
+                }
+            }
+        } catch (error) {
+            console.error("Error preloading country data:", error);
+        }
+    }
 
     // Fetch supporter data from GitHub
     async function fetchSupporterData() {
@@ -26,12 +50,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 const content = atob(data.content); // Decode base64 content
                 supporterData = JSON.parse(content);
                 updateSupportCount();
-                populateCountries(Object.keys(supporterData)); // Populate dropdown after fetching data
                 console.log("Fetched supporter data from GitHub:", supporterData);
             } else if (response.status === 404) {
                 console.warn("Supporter data file not found on GitHub. Initializing empty data.");
                 supporterData = {};
-                populateCountries([]); // Populate dropdown with no countries
             } else {
                 console.error("Failed to fetch supporter data from GitHub:", await response.json());
             }
@@ -194,14 +216,32 @@ document.addEventListener("DOMContentLoaded", () => {
     // Search functionality for countries
     countrySearch.addEventListener("input", () => {
         const searchTerm = countrySearch.value.toLowerCase();
-        const filteredCountries = Object.keys(supporterData).filter((country) =>
+        const filteredCountries = Object.keys(countries).filter((country) =>
             country.toLowerCase().includes(searchTerm)
         );
-        populateCountries(filteredCountries);
+        countrySelect.innerHTML = ""; // Clear existing options
+        if (filteredCountries.length === 0) {
+            const option = document.createElement("option");
+            option.value = "";
+            option.textContent = "No countries available";
+            countrySelect.appendChild(option);
+        } else {
+            filteredCountries.forEach((country) => {
+                const option = document.createElement("option");
+                option.value = country;
+                option.textContent = country;
+                countrySelect.appendChild(option);
+            });
+        }
     });
 
     // Fetch supporter data from GitHub on page load
     fetchSupporterData();
+
+    // Fetch and cache country data, then populate the dropdown
+    preloadCountryData().then(() => {
+        populateCountries(Object.keys(countries));
+    });
 
     // Push data to GitHub every 30 minutes
     setInterval(() => {
