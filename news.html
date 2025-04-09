@@ -3,17 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Latest News on Palestine</title>
+    <title>News - Voices for Palestine</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <!-- Standardized Header -->
     <header>
-        <nav>
-            <a href="index.html" class="nav-link">Home</a>
-            <a href="dashboard.html" class="nav-link">Dashboard</a>
-        </nav>
+        <div class="header-container">
+            <h1 class="site-title">Voices for Palestine</h1>
+            <nav class="nav-menu">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="dashboard.html" class="nav-link">Dashboard</a>
+                <a href="news.html" class="nav-link active">News</a>
+                <a href="about.html" class="nav-link">About</a>
+            </nav>
+            <button class="menu-toggle" aria-label="Toggle navigation menu">&#9776;</button>
+        </div>
     </header>
     <div class="container">
+        <!-- Page-specific content -->
         <h1>Latest News on Palestine</h1>
         <div id="news-container">
             <h2>Loading news...</h2>
@@ -22,31 +30,6 @@
     <footer>
         <p>Voices for Palestine | Powered by Humanity</p>
     </footer>
-    <script>
-        const apiKey = '79543b40144a4111292290a10f6ff7f4'; // Replace with your GNews API key
-        const url = `https://gnews.io/api/v4/search?q=palestine&lang=en&max=5&apikey=${apiKey}`;
-
-        fetch(url)
-            .then(res => res.json())
-            .then(data => {
-                const container = document.getElementById('news-container');
-                container.innerHTML = ''; // Clear the loading message
-                data.articles.forEach(article => {
-                    const div = document.createElement('div');
-                    div.style.marginBottom = "20px";
-                    div.innerHTML = `
-                        <h3><a href="${article.url}" target="_blank">${article.title}</a></h3>
-                        <p>${article.description || ''}</p>
-                        <small>${new Date(article.publishedAt).toLocaleString()}</small>
-                        <hr>
-                    `;
-                    container.appendChild(div);
-                });
-            })
-            .catch(err => {
-                document.getElementById('news-container').innerHTML += "<p>Failed to load news.</p>";
-                console.error("News fetch error:", err);
-            });
-    </script>
+    <script src="script.js" type="module"></script>
 </body>
 </html>

@@ -179,6 +179,48 @@ footer {
     margin-top: auto;
 }
 
+/* Social Links */
+.social-links {
+    list-style: none;
+    padding: 0;
+    margin: 20px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px; /* Add spacing between links */
+}
+
+.social-links li {
+    margin: 0;
+}
+
+.styled-link {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Add spacing between icon and text */
+    text-decoration: none;
+    color: #ffffff; /* White text for contrast */
+    font-size: 1.2rem; /* Slightly larger font size */
+    padding: 10px 15px;
+    border: 2px solid #D71920; /* Red border for Palestinian theme */
+    border-radius: 8px;
+    background-color: #1e1e1e; /* Dark background for links */
+    transition: all 0.3s ease;
+}
+
+.styled-link:hover {
+    background-color: #D71920; /* Red background on hover */
+    color: #ffffff; /* Ensure text remains white */
+    border-color: #ffffff; /* Change border color on hover */
+    transform: scale(1.05); /* Slight zoom effect */
+}
+
+.social-icon {
+    width: 24px;
+    height: 24px;
+    vertical-align: middle;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
     .nav-menu {
