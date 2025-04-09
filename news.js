@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
-    const apiKey = 'YOUR_API_KEY_HERE'; // Replace with your GNews API key
+    const apiKey = '79543b40144a4111292290a10f6ff7f4'; // Replace with your GNews API key
     const url = `https://gnews.io/api/v4/search?q=palestine&lang=en&max=5&apikey=${apiKey}`;
     const CACHE_KEY = "cachedNews";
     const CACHE_TIMESTAMP_KEY = "newsCacheTimestamp";
