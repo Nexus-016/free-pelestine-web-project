@@ -27,6 +27,7 @@ header {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    flex-wrap: wrap; /* Allow wrapping for mobile view */
     max-width: 1200px;
     margin: 0 auto;
 }
@@ -34,22 +35,29 @@ header {
 .site-title {
     font-size: 1.8rem;
     font-weight: bold;
-    margin: 0;
+    margin: 0 auto;
+    text-align: center;
+    width: 100%; /* Ensure the title spans the full width */
 }
 
 /* Navigation Menu Styles */
 .nav-menu {
-    display: flex; /* Always show the menu */
-    gap: 15px;
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap; /* Allow wrapping for mobile view */
+    margin-top: 10px; /* Add spacing below the title */
 }
 
 .nav-link {
     color: #ffffff;
     text-decoration: none;
-    font-size: 1rem;
-    padding: 8px 12px;
+    font-size: 0.9rem; /* Slightly smaller font size for mobile */
+    padding: 6px 10px;
     border-radius: 5px;
     transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth hover effect */
+    background-color: #D71920; /* Match the header background */
+    border: 1px solid #ffffff; /* Add a subtle border */
 }
 
 .nav-link:hover {
@@ -69,10 +77,20 @@ header {
     display: none; /* Hide the 3-dot menu button */
 }
 
+/* Mobile-Specific Styles */
 @media (max-width: 768px) {
     .nav-menu {
-        display: flex; /* Ensure the menu is always visible on mobile */
         flex-direction: row; /* Keep the menu horizontal */
+        gap: 5px; /* Reduce spacing between tabs */
+    }
+
+    .nav-link {
+        font-size: 0.8rem; /* Smaller font size for mobile */
+        padding: 5px 8px; /* Compact padding */
+    }
+
+    .site-title {
+        font-size: 1.5rem; /* Slightly smaller title for mobile */
     }
 }
 

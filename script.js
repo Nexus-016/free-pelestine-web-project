@@ -40,15 +40,18 @@ document.addEventListener("DOMContentLoaded", () => {
     // Preload and cache country data
     async function preloadCountryData() {
         try {
-            const response = await fetch("/country/countries.json");
+            const response = await fetch("country/countries.json"); // Corrected file path
             if (response.ok) {
                 countries = await response.json();
-                populateCountries(Object.keys(countries));
+                console.log("Fetched country data:", countries);
+                populateCountries(Object.keys(countries)); // Populate the dropdown with country names
             } else {
                 console.error("Failed to fetch country data:", response.status);
+                countrySelect.innerHTML = "<option value=''>Failed to load countries</option>";
             }
         } catch (error) {
             console.error("Error preloading country data:", error);
+            countrySelect.innerHTML = "<option value=''>Error loading countries</option>";
         }
     }
 
