@@ -121,17 +121,41 @@ function updateMapColors(countries) {
         const maxSupport = Math.max(...supportCounts, 1);
         console.log('[Dashboard] Max support count:', maxSupport);
 
+        // Reset all countries first
+        document.querySelectorAll('.country').forEach(el => {
+            el.style.fill = '#2D2D2D'; // dark-secondary color
+            el.classList.remove('country-glow-low', 'country-glow-medium', 'country-glow-high');
+        });
+
+        // Update countries with support
         Object.entries(countries).forEach(([code, data]) => {
+            console.log('Processing country:', code, data);
             const element = document.querySelector(`#country-${code}`);
             if (element) {
-                const intensity = (data.count || 0) / maxSupport;
-                element.style.fill = `rgba(228, 49, 43, ${intensity * 0.8})`;
-                
-                // Add appropriate glow class
+                const count = data.count || 0;
+                const intensity = count / maxSupport;
+                console.log('Country intensity:', code, intensity);
+
+                // Set red color with intensity
+                element.style.fill = `rgba(228, 49, 43, ${Math.max(0.3, intensity)})`; // Minimum 0.3 opacity
+
+                // Remove existing glow classes
                 element.classList.remove('country-glow-low', 'country-glow-medium', 'country-glow-high');
-                if (intensity > 0.7) element.classList.add('country-glow-high');
-                else if (intensity > 0.4) element.classList.add('country-glow-medium');
-                else if (intensity > 0.1) element.classList.add('country-glow-low');
+
+                // Add appropriate glow class based on absolute count
+                if (count >= 10) {
+                    element.classList.add('country-glow-high');
+                    console.log('Added high glow to:', code);
+                } else if (count >= 5) {
+                    element.classList.add('country-glow-medium');
+                    console.log('Added medium glow to:', code);
+                } else if (count >= 1) {
+                    element.classList.add('country-glow-low');
+                    console.log('Added low glow to:', code);
+                }
+
+                // Add tooltip
+                element.setAttribute('title', `${data.name}: ${data.count} supporters`);
             }
         });
     } catch (error) {

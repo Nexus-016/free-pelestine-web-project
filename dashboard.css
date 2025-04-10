@@ -88,7 +88,7 @@ body {
     fill: var(--dark-secondary);
     stroke: var(--dark-bg);
     stroke-width: 0.5;
-    transition: all 0.5s ease;
+    transition: all 0.3s ease;
 }
 
 .country-glow {
@@ -96,22 +96,35 @@ body {
 }
 
 .country-glow-low {
-    filter: drop-shadow(0 0 5px rgba(228, 49, 43, 0.3));
+    filter: drop-shadow(0 0 5px rgba(228, 49, 43, 0.5)) brightness(1.2);
 }
 
 .country-glow-medium {
-    filter: drop-shadow(0 0 8px rgba(228, 49, 43, 0.6));
+    filter: drop-shadow(0 0 10px rgba(228, 49, 43, 0.7)) brightness(1.3);
+    animation: pulse-medium 2s infinite;
 }
 
 .country-glow-high {
-    filter: drop-shadow(0 0 12px rgba(228, 49, 43, 0.9));
-    animation: pulse-glow 2s infinite;
+    filter: drop-shadow(0 0 15px rgba(228, 49, 43, 0.9)) brightness(1.4);
+    animation: pulse-high 2s infinite;
 }
 
 @keyframes pulse-glow {
     0% { filter: drop-shadow(0 0 12px rgba(228, 49, 43, 0.9)); }
     50% { filter: drop-shadow(0 0 20px rgba(228, 49, 43, 1)); }
     100% { filter: drop-shadow(0 0 12px rgba(228, 49, 43, 0.9)); }
+}
+
+@keyframes pulse-medium {
+    0% { filter: drop-shadow(0 0 10px rgba(228, 49, 43, 0.7)) brightness(1.3); }
+    50% { filter: drop-shadow(0 0 15px rgba(228, 49, 43, 0.8)) brightness(1.4); }
+    100% { filter: drop-shadow(0 0 10px rgba(228, 49, 43, 0.7)) brightness(1.3); }
+}
+
+@keyframes pulse-high {
+    0% { filter: drop-shadow(0 0 15px rgba(228, 49, 43, 0.9)) brightness(1.4); }
+    50% { filter: drop-shadow(0 0 25px rgba(228, 49, 43, 1)) brightness(1.5); }
+    100% { filter: drop-shadow(0 0 15px rgba(228, 49, 43, 0.9)) brightness(1.4); }
 }
 
 .country-list {
