@@ -18,6 +18,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     const SUPPORTERS_REF = ref(database, "supporters");
     const HAS_VOTED_KEY = "hasVoted"; // LocalStorage key to track voting status
 
+    // Fallback: Hardcoded list of countries
+    const fallbackCountries = ["Bangladesh", "Palestine", "United States", "India"];
+
     // Setup menu toggle
     setupMenuToggle(menuToggle, navMenu);
 
@@ -26,8 +29,49 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (Object.keys(countries).length > 0) {
         populateCountries(Object.keys(countries), countrySelect);
     } else {
-        console.warn("No country data available.");
+        console.warn("Using fallback country data."); debounce
+        populateCountries(fallbackCountries, countrySelect);
+    }        let timeout;
+
+    // Optimize search input with debounce
+    function debounce(func, delay) {            timeout = setTimeout(() => func(...args), delay);
+        let timeout;
+        return (...args) => {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func(...args), delay);put
+        };
     }
+
+    // Filter countries based on search input       const searchTerm = countrySearch.value.toLowerCase();
+    countrySearch.addEventListener("input", () => {
+        const searchTerm = countrySearch.value.toLowerCase();
+        const filteredCountries = Object.keys(countries).filter((country) =>
+            country.toLowerCase().includes(searchTerm)
+        );
+        populateCountries(filteredCountries, countrySelect);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    });
 
     // Setup search functionality
     setupSearch(countrySearch, countrySelect, countries, populateCountries);
