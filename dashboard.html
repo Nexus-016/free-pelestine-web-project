@@ -5,8 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Support Dashboard - Palestine</title>
     <link rel="stylesheet" href="dashboard.css">
+    <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+    <script src="https://cdn.jsdelivr.net/npm/topojson@3"></script>
 </head>
 <body>
+    <header class="header">
+        <nav class="nav-links">
+            <a href="index.html">Support Palestine</a>
+            <a href="dashboard.html" class="active">View Dashboard</a>
+            <a href="news.html">Latest News</a>
+            <a href="about.html">About</a>
+        </nav>
+    </header>
+
     <div class="dashboard-container">
         <h1>Global Support Dashboard</h1>
         <div class="stats">
@@ -26,7 +37,6 @@
     <script src="https://www.gstatic.com/firebasejs/10.6.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.6.0/firebase-database-compat.js"></script>
     <script>
-        // Your Firebase config
         const firebaseConfig = {
             apiKey: "AIzaSyAtFiyXzaSr8D7bvgxcJ74FI-ouvE9lxIg",
             authDomain: "voice-for-palestine-by-nex.firebaseapp.com",

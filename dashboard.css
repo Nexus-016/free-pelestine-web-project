@@ -93,25 +93,27 @@ body {
 
 .country {
     fill: var(--dark-secondary);
-    stroke: var(--dark-surface);
-    stroke-width: 1;
+    stroke: var(--dark-bg);
+    stroke-width: 0.5;
     transition: all 0.3s ease;
-    cursor: pointer;
 }
 
 /* Support level styles */
 .low-support {
-    fill: #E4312b44;
+    fill: rgba(228, 49, 43, 0.3);
+    filter: brightness(1.2);
 }
 
 .medium-support {
-    fill: #E4312b88;
-    animation: pulse-medium 2s infinite;
+    fill: rgba(228, 49, 43, 0.6);
+    filter: brightness(1.4);
+    animation: pulse 2s infinite;
 }
 
 .high-support {
-    fill: #E4312bcc;
-    animation: pulse-high 2s infinite;
+    fill: rgba(228, 49, 43, 0.9);
+    filter: brightness(1.6);
+    animation: glow 2s infinite;
 }
 
 /* Hover effects */
@@ -120,12 +122,12 @@ body {
 }
 
 /* Animations */
-@keyframes pulse-medium {
-    50% { filter: brightness(1.2); }
+@keyframes pulse {
+    50% { filter: brightness(1.6); }
 }
 
-@keyframes pulse-high {
-    50% { filter: brightness(1.4) drop-shadow(0 0 5px #E4312b); }
+@keyframes glow {
+    50% { filter: brightness(1.8) drop-shadow(0 0 10px var(--palestine-red)); }
 }
 
 .country-list {
