@@ -1,6 +1,15 @@
 // Remove the imports and use global Firebase
 // const db = window.db from index.html initialization
 
+// Add country code mapping
+const countryCodeMap = {
+    'BGD': 'BD', // Bangladesh
+    'IND': 'IN', // India
+    'PAK': 'PK', // Pakistan
+    'USA': 'US', // United States
+    // Add more mappings as needed
+};
+
 // Initialize the map
 async function initDashboard() {
     try {
@@ -66,6 +75,11 @@ async function initDashboard() {
 
         console.log('[Dashboard] Base map drawn');
 
+        // Log all country IDs
+        document.querySelectorAll('.country').forEach(country => {
+            console.log('Available country ID:', country.id);
+        });
+
         // Set up Firebase listeners
         console.log('[Dashboard] Setting up Firebase listeners...');
         
@@ -108,44 +122,49 @@ async function initDashboard() {
     }
 }
 
+// Update the updateMapColors function
 function updateMapColors(countries) {
     try {
-        if (!countries || typeof countries !== 'object') {
-            throw new Error('Invalid countries data');
-        }
-
-        // Reset all countries first
+        console.log('Updating map with countries:', countries);
+        
+        // Reset all countries
         document.querySelectorAll('.country').forEach(el => {
             el.style.fill = '#2D2D2D';
-            el.classList.remove('country-glow-low', 'country-glow-medium', 'country-glow-high');
         });
 
         // Update countries with support
         Object.entries(countries).forEach(([code, data]) => {
-            const element = document.querySelector(`#country-${code}`);
-            if (element) {
-                const count = data.count || 0;
-                
-                // Add glow based on absolute count values
-                if (count >= 20) {
-                    element.classList.add('country-glow-high');
-                } else if (count >= 10) {
-                    element.classList.add('country-glow-medium');
-                } else if (count >= 1) {
-                    element.classList.add('country-glow-low');
-                }
-
-                // Add tooltip
-                element.setAttribute('title', `${data.name}: ${count} supporters`);
-                
-                // Add click handler to show info
-                element.onclick = () => {
-                    alert(`${data.name}\nSupport Count: ${count}`);
-                };
+            console.log('Processing country:', code, data);
+            
+            // Convert country code if needed
+            const normalizedCode = countryCodeMap[code] || code;
+            const count = data.count || 0;
+            
+            // Find all possible elements for this country
+            const elements = document.querySelectorAll(`[id$="-${normalizedCode}"]`);
+            if (elements.length > 0) {
+                elements.forEach(element => {
+                    // Calculate color intensity based on support count
+                    const intensity = Math.min(count / 10, 1); // Max intensity at 10 supports
+                    const color = `rgba(228, 49, 43, ${intensity})`;
+                    element.style.fill = color;
+                    
+                    // Add tooltip
+                    element.setAttribute('title', `${data.name}: ${count} supporters`);
+                    
+                    // Add click handler
+                    element.onclick = () => {
+                        alert(`${data.name}\nSupport Count: ${count}`);
+                    };
+                    
+                    console.log(`Updated country ${code} with color ${color}`);
+                });
+            } else {
+                console.warn(`No element found for country code: ${code} or ${normalizedCode}`);
             }
         });
     } catch (error) {
-        console.error('[Dashboard] Map update error:', error);
+        console.error('Map update error:', error);
     }
 }
 
