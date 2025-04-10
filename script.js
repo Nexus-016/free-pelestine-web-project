@@ -2,7 +2,7 @@ import { database } from "./firebase-config.js";
 import { ref, get, update } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
 import { preloadCountryData, populateCountries, countries } from "./country.js";
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
     const supportButton = document.getElementById("supportButton");
     const thankYouMessage = document.getElementById("thankYouMessage");
     const supportCount = document.getElementById("supportCount");
@@ -135,8 +135,9 @@ document.addEventListener("DOMContentLoaded", () => {
         }, 300)
     );
 
-    // Fetch and cache country data, then populate the dropdown
-    preloadCountryData(countrySelect, populateCountries);
+    // Preload country data and populate the dropdown
+    await preloadCountryData();
+    populateCountries(Object.keys(countries), countrySelect);
 
     // Fetch supporter data on page load
     fetchSupporterData();
