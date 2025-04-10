@@ -105,9 +105,38 @@ document.addEventListener("DOMContentLoaded", async () => {
         updateSupporterList();
     }
 
+    // Highlight user's country on the map
+    function highlightUserCountry(latitude, longitude) {
+        const userMarker = L.circleMarker([latitude, longitude], {
+            radius: 12,
+            fillColor: "#FF0000", // Red for user's location
+            color: "#FF0000",
+            weight: 2,
+            fillOpacity: 0.8,
+        }).addTo(map);
+
+        userMarker.bindPopup("<b>Your Location</b>").openPopup();
+    }
+
     // Fetch country data and initial supporter data
     await fetchCountryData();
     await fetchSupporterData();
+
+    // Detect user location and highlight on the map
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const { latitude, longitude } = position.coords;
+                console.log(`User location detected: ${latitude}, ${longitude}`);
+                highlightUserCountry(latitude, longitude);
+            },
+            (error) => {
+                console.error("Error detecting user location:", error);
+            }
+        );
+    } else {
+        console.warn("Geolocation is not supported by this browser.");
+    }
 
     // Periodically fetch the latest supporter data and update the dashboard
     setInterval(() => {

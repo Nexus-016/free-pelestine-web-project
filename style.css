@@ -270,3 +270,52 @@ footer {
 .leaflet-marker-icon:hover {
     transform: scale(1.2); /* Slight zoom effect on hover */
 }
+
+/* Developer Tools Styles */
+.hidden {
+    display: none;
+}
+
+#authSection {
+    margin: 20px 0;
+}
+
+#authSection input {
+    padding: 10px;
+    font-size: 16px;
+    margin-right: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+#authSection button {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #007A3D; /* Green for Palestinian theme */
+    color: #ffffff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#authSection button:hover {
+    background-color: #005F2E; /* Darker green for hover */
+}
+
+#toolsSection button {
+    display: block;
+    margin: 10px auto;
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #D71920; /* Red for Palestinian theme */
+    color: #ffffff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#toolsSection button:hover {
+    background-color: #A31515; /* Darker red for hover */
+}

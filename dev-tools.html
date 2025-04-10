@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Developer Tools</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Developer Tools</h1>
+        <div id="authSection">
+            <p>Enter the access code to unlock developer tools:</p>
+            <input type="password" id="accessCode" placeholder="Enter access code">
+            <button id="unlockButton">Unlock</button>
+        </div>
+        <div id="toolsSection" class="hidden">
+            <h2>Tools</h2>
+            <button id="clearCacheButton">Clear Cache</button>
+            <button id="clearDatabaseButton">Clear Database</button>
+            <button id="reloadPageButton">Reload Page</button>
+        </div>
+    </div>
+    <script src="dev-tools.js" type="module"></script>
+</body>
+</html>

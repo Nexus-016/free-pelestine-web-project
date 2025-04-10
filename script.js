@@ -27,10 +27,40 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Preload country data and populate the dropdown
     await preloadCountryData();
     if (Object.keys(countries).length > 0) {
+        console.log("Populating dropdown with countries:", Object.keys(countries));
         populateCountries(Object.keys(countries), countrySelect);
     } else {
-        console.warn("Using fallback country data.");
+        console.warn("No country data available.");
         populateCountries(fallbackCountries, countrySelect);
+    }
+
+    // Detect user location and auto-select their country
+    let userRegion = "Unknown Region";
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            async (position) => {
+                const { latitude, longitude } = position.coords;
+                console.log(`Detected location: ${latitude}, ${longitude}`);
+
+                // Reverse geocode to find the country and region
+                const response = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`);
+                const data = await response.json();
+                const userCountry = data.address?.country;
+                userRegion = data.address?.state || data.address?.region || userCountry || "Unknown Region";
+
+                if (userCountry && countries[userCountry]) {
+                    countrySelect.value = userCountry;
+                    console.log(`Auto-selected country: ${userCountry}`);
+                } else {
+                    console.warn("Could not detect country or country not in the list.");
+                }
+            },
+            (error) => {
+                console.error("Error detecting location:", error);
+            }
+        );
+    } else {
+        console.warn("Geolocation is not supported by this browser.");
     }
 
     // Optimize search input with debounce
@@ -65,4 +95,26 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (hasVoted) {
         disableVotingUI(supportButton, thankYouMessage, supportSideRadios);
     }
+
+    // Submit support for a country
+    supportButton.addEventListener("click", async () => {
+        const selectedCountry = countrySelect.value;
+        const currentCount = countries[selectedCountry] || 0;
+
+        try {
+            // Update the supporter count in the database
+            await update(ref(database, `supporters/${selectedCountry}`), { count: currentCount + 1 });
+
+            // Mark the user as having voted
+            localStorage.setItem(HAS_VOTED_KEY, "true");
+
+            // Disable voting UI
+            disableVotingUI(supportButton, thankYouMessage, supportSideRadios);
+
+            // Show a popup with the confirmation message and region
+            alert(`Thank you for supporting Palestine! Your region: ${userRegion}`);
+        } catch (error) {
+            console.error("Error updating supporter data:", error);
+        }
+    });
 });
