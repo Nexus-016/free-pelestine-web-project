@@ -1,5 +1,5 @@
 import { database } from "./firebase-config.js";
-import { ref, get, set, update } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+import { ref, get, update } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
 
 document.addEventListener("DOMContentLoaded", () => {
     const supportButton = document.getElementById("supportButton");
@@ -58,15 +58,19 @@ document.addEventListener("DOMContentLoaded", () => {
     // Fetch supporter data from Firebase
     async function fetchSupporterData() {
         try {
+            console.log("Fetching supporter data...");
             const snapshot = await get(SUPPORTERS_REF);
             if (snapshot.exists()) {
                 supporterData = snapshot.val();
+                console.log("Fetched supporter data:", supporterData);
                 updateSupportCount();
             } else {
                 console.warn("No supporter data found.");
+                supportCount.textContent = "No data available.";
             }
         } catch (error) {
             console.error("Error fetching supporter data:", error);
+            supportCount.textContent = "Failed to load data.";
         }
     }
 
