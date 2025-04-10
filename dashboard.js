@@ -10,12 +10,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     let supporterData = {};
     const markers = new Map(); // Store markers by country
 
-    const API_URL = "http://localhost:5000/api/supporters"; // Backend API URL
+    const API_URL = "https://your-backend-url.vercel.app/api/supporters"; // Replace with your deployed backend URL
 
-    // Fetch country data from the new folder
+    // Fetch country data from the JSON file
     async function fetchCountryData() {
         try {
-            const response = await fetch("/country/countries.json"); // Ensure the path starts with "/"
+            const response = await fetch("/country/countries.json");
             if (response.ok) {
                 countries = await response.json();
                 console.log("Fetched country data:", countries);
@@ -27,7 +27,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     }
 
-    // Fetch supporter data from MongoDB
+    // Fetch supporter data from the backend
     async function fetchSupporterData() {
         try {
             const response = await fetch(API_URL);
@@ -37,7 +37,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     acc[item.country] = item.count;
                     return acc;
                 }, {});
-                console.log("Fetched supporter data from MongoDB:", supporterData);
+                console.log("Fetched supporter data:", supporterData);
                 updateDashboard();
             } else {
                 console.error("Failed to fetch supporter data:", response.status);
@@ -82,6 +82,8 @@ document.addEventListener("DOMContentLoaded", async () => {
                     circle.bindPopup(`<b>${country}</b><br>Supporters: ${count}`);
                     markers.set(country, circle);
                 }
+            } else {
+                console.warn(`Coordinates not found for country: ${country}`);
             }
         });
     }

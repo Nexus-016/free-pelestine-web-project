@@ -77,7 +77,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Update the supporter count display
     function updateSupportCount() {
-        const totalSupporters = Object.values(supporterData).reduce((sum, count) => sum + count, 0);
+        let totalSupporters = 0;
+
+        // Ensure supporterData contains only numeric values
+        Object.values(supporterData).forEach((count) => {
+            if (typeof count === "number") {
+                totalSupporters += count;
+            } else {
+                console.warn("Invalid data detected in supporterData:", count);
+            }
+        });
+
         supportCount.textContent = `${totalSupporters} people have supported so far.`;
     }
 
@@ -88,13 +98,22 @@ document.addEventListener("DOMContentLoaded", () => {
             supportButton.disabled = true;
             supportButton.textContent = "You have already voted";
             thankYouMessage.classList.remove("hidden");
+            disableSupportSideRadios();
         }
     }
 
-    // Enable the button only if "Palestine" is selected
+    // Disable all support side radio buttons
+    function disableSupportSideRadios() {
+        supportSideRadios.forEach((radio) => {
+            radio.disabled = true;
+        });
+    }
+
+    // Enable the button only if "Palestine" is selected and the user hasn't voted
     supportSideRadios.forEach((radio) => {
         radio.addEventListener("change", () => {
-            if (radio.value === "Palestine" && radio.checked) {
+            const hasVoted = localStorage.getItem(HAS_VOTED_KEY);
+            if (radio.value === "Palestine" && radio.checked && !hasVoted) {
                 supportButton.disabled = false;
             } else {
                 supportButton.disabled = true;
@@ -118,6 +137,7 @@ document.addEventListener("DOMContentLoaded", () => {
             thankYouMessage.classList.remove("hidden");
             supportButton.disabled = true;
             supportButton.textContent = "You have already voted";
+            disableSupportSideRadios();
         } catch (error) {
             console.error("Error updating supporter data:", error);
         }
