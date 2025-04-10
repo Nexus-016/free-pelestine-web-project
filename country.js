@@ -11,6 +11,7 @@ export async function preloadCountryData() {
         } else {
             console.log("Fetching country data...");
             const response = await fetch("country/countries.json"); // Ensure this path is correct
+            console.log("Response status:", response.status); // Debugging log
             if (response.ok) {
                 countries = await response.json();
                 console.log("Fetched country data:", countries);
