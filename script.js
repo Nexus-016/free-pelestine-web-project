@@ -84,17 +84,25 @@ document.addEventListener("DOMContentLoaded", async () => {
         }, 300)
     );
 
+    // Enable the "Support Palestine" button if the user hasn't voted
+    function enableSupportButton() {
+        const hasVoted = localStorage.getItem(HAS_VOTED_KEY);
+        if (!hasVoted) {
+            supportButton.disabled = false;
+            console.log("Support button enabled for voting.");
+        } else {
+            disableVotingUI(supportButton, thankYouMessage, supportSideRadios);
+        }
+    }
+
     // Fetch supporter data and update the count
     fetchSupporterData(SUPPORTERS_REF, countries, (data) => updateSupportCount(data, supportCount));
 
     // Setup voting functionality
     setupVoting(supportSideRadios, supportButton, HAS_VOTED_KEY);
 
-    // Check if the user has already voted
-    const hasVoted = localStorage.getItem(HAS_VOTED_KEY);
-    if (hasVoted) {
-        disableVotingUI(supportButton, thankYouMessage, supportSideRadios);
-    }
+    // Check if the user has already voted and enable/disable the button
+    enableSupportButton();
 
     // Submit support for a country
     supportButton.addEventListener("click", async () => {
