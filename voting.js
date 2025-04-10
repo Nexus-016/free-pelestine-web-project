@@ -14,9 +14,10 @@ export function setupVoting(supportSideRadios, supportButton, HAS_VOTED_KEY) {
 
 export function disableVotingUI(supportButton, thankYouMessage, supportSideRadios) {
     supportButton.disabled = true;
-    supportButton.textContent = "You have already voted";
+    supportButton.textContent = "You have already supported";
     thankYouMessage.classList.remove("hidden");
     supportSideRadios.forEach((radio) => {
         radio.disabled = true;
     });
+    console.log("Voting UI disabled.");
 }

@@ -37,30 +37,59 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Detect user location and auto-select their country
     let userRegion = "Unknown Region";
     if (navigator.geolocation) {
+        console.log("Geolocation API is supported. Requesting location...");
         navigator.geolocation.getCurrentPosition(
             async (position) => {
                 const { latitude, longitude } = position.coords;
-                console.log(`Detected location: ${latitude}, ${longitude}`);
+                console.log(`Detected location: Latitude ${latitude}, Longitude ${longitude}`);
 
                 // Reverse geocode to find the country and region
-                const response = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`);
-                const data = await response.json();
-                const userCountry = data.address?.country;
-                userRegion = data.address?.state || data.address?.region || userCountry || "Unknown Region";
+                try {
+                    const response = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`);
+                    if (response.ok) {
+                        const data = await response.json();
+                        const userCountry = data.address?.country;
+                        userRegion = data.address?.state || data.address?.region || userCountry || "Unknown Region";
 
-                if (userCountry && countries[userCountry]) {
-                    countrySelect.value = userCountry;
-                    console.log(`Auto-selected country: ${userCountry}`);
-                } else {
-                    console.warn("Could not detect country or country not in the list.");
+                        if (userCountry && countries[userCountry]) {
+                            countrySelect.value = userCountry;
+                            console.log(`Auto-selected country: ${userCountry}`);
+                        } else {
+                            console.warn("Could not detect country or country not in the list.");
+                        }
+                    } else {
+                        console.error("Failed to fetch reverse geocoding data:", response.status);
+                    }
+                } catch (error) {
+                    console.error("Error during reverse geocoding:", error);
                 }
             },
             (error) => {
                 console.error("Error detecting location:", error);
+                switch (error.code) {
+                    case error.PERMISSION_DENIED:
+                        alert("Location permission denied. Please allow location access.");
+                        break;
+                    case error.POSITION_UNAVAILABLE:
+                        alert("Location information is unavailable.");
+                        break;
+                    case error.TIMEOUT:
+                        alert("The request to get user location timed out.");
+                        break;
+                    default:
+                        alert("An unknown error occurred while fetching location.");
+                        break;
+                }
+            },
+            {
+                enableHighAccuracy: true, // Use high accuracy for better results
+                timeout: 10000, // Timeout after 10 seconds
+                maximumAge: 0, // Do not use cached location
             }
         );
     } else {
         console.warn("Geolocation is not supported by this browser.");
+        alert("Geolocation is not supported by your browser.");
     }
 
     // Optimize search input with debounce
@@ -87,11 +116,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Enable the "Support Palestine" button if the user hasn't voted
     function enableSupportButton() {
         const hasVoted = localStorage.getItem(HAS_VOTED_KEY);
+        console.log("Checking voting status:", hasVoted); // Debugging log
         if (!hasVoted) {
             supportButton.disabled = false;
             console.log("Support button enabled for voting.");
         } else {
             disableVotingUI(supportButton, thankYouMessage, supportSideRadios);
+            console.log("Support button disabled because the user has already voted.");
         }
     }
 
