@@ -39,62 +39,40 @@ header {
 
 /* Navigation Menu Styles */
 .nav-menu {
-    display: none; /* Hide the menu by default */
-    flex-direction: column;
-    background-color: #D71920; /* Red background for Palestinian theme */
-    position: absolute;
-    top: 100%;
-    right: 0;
-    left: 0;
-    padding: 10px 0;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-    z-index: 1000; /* Ensure it appears above other elements */
+    display: flex; /* Always show the menu */
+    gap: 15px;
 }
 
-.nav-menu.active {
-    display: flex; /* Show the menu when active */
-}
-
-.menu-toggle {
-    display: none;
-    background: none;
-    border: none;
+.nav-link {
     color: #ffffff;
-    font-size: 1.8rem; /* Slightly smaller size for better appearance */
-    cursor: pointer;
-    padding: 5px; /* Add padding for better clickability */
-    border-radius: 50%; /* Make it circular */
-    background-color: #D71920; /* Red background for Palestinian theme */
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3); /* Add shadow for a modern look */
-    transition: transform 0.3s ease, background-color 0.3s ease; /* Smooth hover effect */
+    text-decoration: none;
+    font-size: 1rem;
+    padding: 8px 12px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth hover effect */
 }
 
-.menu-toggle:hover {
-    transform: scale(1.1); /* Slight zoom effect on hover */
+.nav-link:hover {
     background-color: #005F2E; /* Darker green for hover */
+    transform: scale(1.05); /* Slight zoom effect */
 }
 
-/* Mobile Menu Styles */
+/* Highlight active navigation link */
+.nav-link.active {
+    background-color: #005F2E; /* Darker green for active link */
+    font-weight: bold;
+    border: 1px solid #ffffff; /* Add a subtle border for emphasis */
+}
+
+/* Remove mobile-specific styles */
+.menu-toggle {
+    display: none; /* Hide the 3-dot menu button */
+}
+
 @media (max-width: 768px) {
     .nav-menu {
-        display: none; /* Hide the menu by default on mobile */
-        flex-direction: column;
-        background-color: #D71920;
-        position: absolute;
-        top: 100%;
-        right: 0;
-        left: 0;
-        padding: 10px 0;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-        z-index: 1000; /* Ensure it appears above other elements */
-    }
-
-    .nav-menu.active {
-        display: flex; /* Show the menu when active */
-    }
-
-    .menu-toggle {
-        display: block; /* Show the menu toggle button on mobile */
+        display: flex; /* Ensure the menu is always visible on mobile */
+        flex-direction: row; /* Keep the menu horizontal */
     }
 }
 
