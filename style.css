@@ -319,3 +319,40 @@ footer {
 #toolsSection button:hover {
     background-color: #A31515; /* Darker red for hover */
 }
+
+/* News Page Styles */
+.news-item {
+    background-color: #1e1e1e; /* Dark background for news items */
+    color: #ffffff; /* White text for contrast */
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smooth hover effect */
+}
+
+.news-item:hover {
+    transform: scale(1.02); /* Slight zoom effect */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+}
+
+.news-item h2 {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+}
+
+.news-item p {
+    font-size: 1rem;
+    margin-bottom: 10px;
+}
+
+.news-item a {
+    color: #007A3D; /* Green for Palestinian theme */
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.3s ease;
+}
+
+.news-item a:hover {
+    color: #005F2E; /* Darker green for hover */
+}

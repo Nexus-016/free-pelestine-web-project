@@ -3,14 +3,12 @@ import { preloadCountryData, populateCountries, countries } from "./country.js";
 import { setupMenuToggle } from "./menu.js";
 import { fetchSupporterData, updateSupportCount } from "./supporter.js";
 import { setupVoting, disableVotingUI } from "./voting.js";
-import { setupSearch } from "./search.js";
 
 document.addEventListener("DOMContentLoaded", async () => {
     const supportButton = document.getElementById("supportButton");
     const thankYouMessage = document.getElementById("thankYouMessage");
     const supportCount = document.getElementById("supportCount");
     const countrySelect = document.getElementById("countrySelect");
-    const countrySearch = document.getElementById("countrySearch");
     const supportSideRadios = document.querySelectorAll("input[name='supportSide']");
     const menuToggle = document.querySelector(".menu-toggle");
     const navMenu = document.querySelector(".nav-menu");
@@ -33,85 +31,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         console.warn("No country data available.");
         populateCountries(fallbackCountries, countrySelect);
     }
-
-    // Detect user location and auto-select their country
-    let userRegion = "Unknown Region";
-    if (navigator.geolocation) {
-        console.log("Geolocation API is supported. Requesting location...");
-        navigator.geolocation.getCurrentPosition(
-            async (position) => {
-                const { latitude, longitude } = position.coords;
-                console.log(`Detected location: Latitude ${latitude}, Longitude ${longitude}`);
-
-                // Reverse geocode to find the country and region
-                try {
-                    const response = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`);
-                    if (response.ok) {
-                        const data = await response.json();
-                        const userCountry = data.address?.country;
-                        userRegion = data.address?.state || data.address?.region || userCountry || "Unknown Region";
-
-                        if (userCountry && countries[userCountry]) {
-                            countrySelect.value = userCountry;
-                            console.log(`Auto-selected country: ${userCountry}`);
-                        } else {
-                            console.warn("Could not detect country or country not in the list.");
-                        }
-                    } else {
-                        console.error("Failed to fetch reverse geocoding data:", response.status);
-                    }
-                } catch (error) {
-                    console.error("Error during reverse geocoding:", error);
-                }
-            },
-            (error) => {
-                console.error("Error detecting location:", error);
-                switch (error.code) {
-                    case error.PERMISSION_DENIED:
-                        alert("Location permission denied. Please allow location access.");
-                        break;
-                    case error.POSITION_UNAVAILABLE:
-                        alert("Location information is unavailable.");
-                        break;
-                    case error.TIMEOUT:
-                        alert("The request to get user location timed out.");
-                        break;
-                    default:
-                        alert("An unknown error occurred while fetching location.");
-                        break;
-                }
-            },
-            {
-                enableHighAccuracy: true, // Use high accuracy for better results
-                timeout: 10000, // Timeout after 10 seconds
-                maximumAge: 0, // Do not use cached location
-            }
-        );
-    } else {
-        console.warn("Geolocation is not supported by this browser.");
-        alert("Geolocation is not supported by your browser.");
-    }
-
-    // Optimize search input with debounce
-    function debounce(func, delay) {
-        let timeout;
-        return (...args) => {
-            clearTimeout(timeout);
-            timeout = setTimeout(() => func(...args), delay);
-        };
-    }
-
-    // Filter countries based on search input
-    countrySearch.addEventListener(
-        "input",
-        debounce(() => {
-            const searchTerm = countrySearch.value.toLowerCase();
-            const filteredCountries = Object.keys(countries).filter((country) =>
-                country.toLowerCase().includes(searchTerm)
-            );
-            populateCountries(filteredCountries, countrySelect);
-        }, 300)
-    );
 
     // Enable the "Support Palestine" button if the user hasn't voted
     function enableSupportButton() {
@@ -151,7 +70,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             disableVotingUI(supportButton, thankYouMessage, supportSideRadios);
 
             // Show a popup with the confirmation message and region
-            alert(`Thank you for supporting Palestine! Your region: ${userRegion}`);
+            alert(`Thank you for supporting Palestine!`);
         } catch (error) {
             console.error("Error updating supporter data:", error);
         }

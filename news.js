@@ -1,70 +1,45 @@
-document.addEventListener("DOMContentLoaded", () => {
-    const apiKey = '79543b40144a4111292290a10f6ff7f4'; // Replace with your GNews API key
-    const url = `https://gnews.io/api/v4/search?q=palestine&lang=en&max=5&apikey=${apiKey}`;
-    const CACHE_KEY = "cachedNews";
-    const CACHE_TIMESTAMP_KEY = "newsCacheTimestamp";
-    const CACHE_DURATION = 3 * 60 * 60 * 1000; // 3 hours in milliseconds
+document.addEventListener("DOMContentLoaded", async () => {
+    const newsContainer = document.getElementById("newsContainer");
 
-    const newsContainer = document.getElementById("news-container");
-
-    // Fetch news from the API
+    // Fetch news data from an API or local JSON file
     async function fetchNews() {
         try {
-            const response = await fetch(url);
+            const response = await fetch("https://newsapi.org/v2/top-headlines?country=us&category=general&apiKey=YOUR_NEWS_API_KEY");
             if (response.ok) {
                 const data = await response.json();
-                localStorage.setItem(CACHE_KEY, JSON.stringify(data.articles)); // Cache the news
-                localStorage.setItem(CACHE_TIMESTAMP_KEY, Date.now()); // Cache the timestamp
-                displayNews(data.articles);
+                renderNews(data.articles);
             } else {
                 console.error("Failed to fetch news:", response.status);
                 newsContainer.innerHTML = "<p>Failed to load news. Please try again later.</p>";
             }
         } catch (error) {
             console.error("Error fetching news:", error);
-            newsContainer.innerHTML = "<p>Failed to load news. Please try again later.</p>";
+            newsContainer.innerHTML = "<p>Error loading news. Please check your connection.</p>";
         }
     }
 
-    // Display news articles
-    function displayNews(articles) {
+    // Render news articles on the page
+    function renderNews(articles) {
         newsContainer.innerHTML = ""; // Clear existing content
-        articles.forEach(article => {
-            const div = document.createElement("div");
-            div.style.marginBottom = "20px";
-            div.innerHTML = `
-                <h3><a href="${article.url}" target="_blank">${article.title}</a></h3>
-                <p>${article.description || ''}</p>
-                <small>${new Date(article.publishedAt).toLocaleString()}</small>
-                <hr>
+        if (articles.length === 0) {
+            newsContainer.innerHTML = "<p>No news articles available at the moment.</p>";
+            return;
+        }
+
+        articles.forEach((article) => {
+            const newsItem = document.createElement("div");
+            newsItem.classList.add("news-item");
+
+            newsItem.innerHTML = `
+                <h2>${article.title}</h2>
+                <p>${article.description || "No description available."}</p>
+                <a href="${article.url}" target="_blank">Read more</a>
             `;
-            newsContainer.appendChild(div);
+
+            newsContainer.appendChild(newsItem);
         });
     }
 
-    // Check if cached news is still valid
-    function isCacheValid() {
-        const cachedTimestamp = localStorage.getItem(CACHE_TIMESTAMP_KEY);
-        if (!cachedTimestamp) return false;
-        const elapsedTime = Date.now() - parseInt(cachedTimestamp, 10);
-        return elapsedTime < CACHE_DURATION;
-    }
-
-    // Load news (from cache or API)
-    function loadNews() {
-        if (isCacheValid()) {
-            const cachedNews = JSON.parse(localStorage.getItem(CACHE_KEY));
-            if (cachedNews) {
-                displayNews(cachedNews);
-                console.log("Loaded news from cache.");
-            } else {
-                fetchNews(); // Fallback to API if cache is empty
-            }
-        } else {
-            fetchNews(); // Fetch fresh news if cache is expired
-        }
-    }
-
-    // Load news on page load
-    loadNews();
+    // Fetch and display news on page load
+    await fetchNews();
 });
