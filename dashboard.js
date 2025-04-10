@@ -1,103 +1,89 @@
-async function initDashboard() {
-    try {
-        console.log('[Dashboard] Starting initialization...');
-        
-        if (!window.d3) {
-            throw new Error('D3.js not loaded');
-        }
-        if (!window.topojson) {
-            throw new Error('Topojson not loaded');
-        }
-        if (!window.db) {
-            throw new Error('Firebase database not initialized');
-        }
-
-        // Load world map data
-        console.log('[Dashboard] Fetching map data...');
-        const response = await fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json');
-        if (!response.ok) {
-            throw new Error(`Map data fetch failed: ${response.status}`);
-        }
-        const topology = await response.json();
-        console.log('[Dashboard] Map data loaded');
-
-        const countries = topojson.feature(topology, topology.objects.countries);
+function initDashboard() {
+    window.addEventListener('mapDataReady', () => {
         const worldMap = document.getElementById('world-map');
-        
-        if (!worldMap) {
-            throw new Error('World map container not found');
-        }
+        if (!worldMap) return;
 
+        worldMap.innerHTML = '';
         const width = worldMap.clientWidth;
         const height = width * 0.5;
         
-        console.log('[Dashboard] Setting up SVG with dimensions:', { width, height });
-        
-        // Clear any existing SVG
-        worldMap.innerHTML = '';
-        
         const svg = d3.select('#world-map')
             .append('svg')
+            .attr('viewBox', '0 0 960 480')
             .attr('width', width)
             .attr('height', height);
 
-        const projection = d3.geoNaturalEarth1()
-            .fitSize([width, height], countries);
+        // Create projection
+        const projection = d3.geoMercator()
+            .fitSize([960, 480], window.mapData);
 
+        // Create path generator
         const path = d3.geoPath().projection(projection);
 
-        // Draw base map
+        // Draw countries
         svg.selectAll('path')
-            .data(countries.features)
+            .data(window.mapData.features)
             .enter()
             .append('path')
             .attr('d', path)
+            .attr('id', d => `country-${d.id}`)
             .attr('class', 'country')
-            .attr('id', d => `country-${d.id}`);
+            .attr('data-name', d => d.properties.name);
 
         // Set up Firebase listeners
-        window.db.ref('countries').on('value', snapshot => {
-            const data = snapshot.val() || {};
-            updateMapColors(data);
-            updateTopCountries(data);
-        });
-
-        window.db.ref('totalSupports').on('value', snapshot => {
-            const total = snapshot.val() || 0;
-            document.getElementById('total-counter').textContent = total.toLocaleString();
-        });
-
-    } catch (error) {
-        console.error('[Dashboard] Error:', error);
-    }
+        window.db.ref('countries').on('value', updateMapColors);
+        window.db.ref('totalSupports').on('value', updateTotalCounter);
+    });
 }
 
-function updateMapColors(countries) {
+function updateMapColors(snapshot) {
     try {
+        const countries = snapshot.val() || {};
+        const maxSupport = Math.max(...Object.values(countries).map(c => c.count || 0));
+        
         // Reset all countries
         document.querySelectorAll('.country').forEach(el => {
-            el.style.fill = '#2D2D2D';
             el.classList.remove('high-support', 'medium-support', 'low-support');
         });
 
-        // Update countries with support
+        // Update countries with support and glow effects
         Object.entries(countries).forEach(([code, data]) => {
             const count = data.count || 0;
             const element = document.querySelector(`#country-${code}`);
             
             if (element) {
-                if (count >= 20) {
+                // Calculate support level based on count
+                if (count >= maxSupport * 0.7) {
                     element.classList.add('high-support');
-                } else if (count >= 10) {
+                } else if (count >= maxSupport * 0.3) {
                     element.classList.add('medium-support');
-                } else if (count >= 1) {
+                } else if (count > 0) {
                     element.classList.add('low-support');
                 }
-                element.setAttribute('title', `${data.name}: ${count} supporters`);
+
+                // Add tooltip with support count
+                element.setAttribute('title', `${data.name}: ${count.toLocaleString()} supporters`);
+                
+                // Add data attributes for filtering
+                element.setAttribute('data-support-count', count);
+                element.setAttribute('data-country-name', data.name);
             }
         });
+
+        // Update top countries list with glow indicators
+        updateTopCountries(countries);
+
     } catch (error) {
         console.error('[Dashboard] Map update error:', error);
+    }
+}
+
+function updateTotalCounter(snapshot) {
+    try {
+        document.getElementById('total-counter').textContent = 
+            (snapshot.val() || 0).toLocaleString();
+    } catch (error) {
+        console.error('[Dashboard] Total counter update error:', error);
     }
 }
 
@@ -108,12 +94,25 @@ function updateTopCountries(countries) {
             .sort(([,a], [,b]) => (b.count || 0) - (a.count || 0))
             .slice(0, 10);
         
-        list.innerHTML = sorted
-            .map(([_, data]) => `<li>${data.name}: ${data.count.toLocaleString()} supporters</li>`)
-            .join('');
+        list.innerHTML = sorted.map(([code, data]) => {
+            const supportClass = getSupportClass(data.count);
+            return `
+                <li class="${supportClass}">
+                    ${data.name}: ${data.count.toLocaleString()} supporters
+                </li>
+            `;
+        }).join('');
     } catch (error) {
         console.error('Error updating top countries:', error);
     }
+}
+
+function getSupportClass(count) {
+    // Helper function to determine support class
+    if (count >= 20) return 'high-support';
+    if (count >= 10) return 'medium-support';
+    if (count >= 1) return 'low-support';
+    return '';
 }
 
 document.addEventListener('DOMContentLoaded', initDashboard);
