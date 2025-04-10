@@ -37,25 +37,28 @@ document.getElementById('support-btn').addEventListener('click', async function(
     const checkbox = this.querySelector('.checkbox-tick');
     
     button.disabled = true;
+    const originalButtonHtml = button.innerHTML;
     button.innerHTML += '<span class="loading"> Loading...</span>';
     
     try {
         const locationData = await getUserLocation();
         
         if (locationData) {
-            // Check in Firebase if this IP has already supported
             const ipHash = await generateIPHash();
             const ipCheckRef = db.ref(`ip_checks/${ipHash}`);
             const ipSnapshot = await ipCheckRef.get();
 
             if (ipSnapshot.exists()) {
                 alert('Support has already been recorded from this location.');
+                button.disabled = false;
+                button.innerHTML = originalButtonHtml;
                 return;
             }
 
-            checkbox.style.display = 'block';
+            // Add show class to checkbox tick
+            checkbox.classList.add('show');
             
-            // Update Firebase with location data and IP check
+            // Update Firebase
             const updates = {};
             updates[`supports/${locationData.country}`] = firebase.database.ServerValue.increment(1);
             updates[`ip_checks/${ipHash}`] = true;
@@ -63,20 +66,37 @@ document.getElementById('support-btn').addEventListener('click', async function(
 
             await db.ref().update(updates);
 
-            // Mark user as supported locally
+            // Mark user as supported
             markUserAsSupported();
-
+            
             // Update UI
             document.getElementById('thank-you').classList.remove('hidden');
             document.getElementById('share-section').classList.remove('hidden');
-            updateSupporterCount();
+            await updateSupporterCount();
+            
+            // Update button state
+            button.innerHTML = originalButtonHtml;
+            checkbox.classList.add('show');
+            button.disabled = true;
         }
     } catch (error) {
         console.error('Error recording support:', error);
         alert('There was an error recording your support. Please try again.');
         button.disabled = false;
+        button.innerHTML = originalButtonHtml;
     } finally {
         button.querySelector('.loading')?.remove();
+    }
+});
+
+// When checking if user already supported on page load
+document.addEventListener('DOMContentLoaded', function() {
+    updateSupporterCount();
+    if (hasUserAlreadySupported()) {
+        const button = document.getElementById('support-btn');
+        const checkbox = button.querySelector('.checkbox-tick');
+        checkbox.classList.add('show');
+        button.disabled = true;
     }
 });
 
