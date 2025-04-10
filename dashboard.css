@@ -96,41 +96,44 @@ body {
     stroke: var(--dark-bg);
     stroke-width: 0.5;
     transition: all 0.5s ease;
+    cursor: default; /* Remove pointer cursor */
 }
 
-/* Support level styles */
+/* Remove all hover effects */
+.country:hover {
+    opacity: 1;
+    filter: none;
+}
+
+/* Enhanced support level styles */
 .low-support {
-    fill: rgba(228, 49, 43, 0.3);
+    fill: rgba(228, 49, 43, 0.4);
+    filter: none;
 }
 
 .medium-support {
-    fill: rgba(228, 49, 43, 0.6);
-    filter: drop-shadow(0 0 5px rgba(228, 49, 43, 0.5));
-    animation: pulseMedium 3s infinite;
+    fill: rgba(228, 49, 43, 0.7);
+    filter: drop-shadow(0 0 8px rgba(228, 49, 43, 0.6));
+    animation: pulseMedium 4s infinite;
 }
 
 .high-support {
-    fill: rgba(228, 49, 43, 0.9);
-    filter: drop-shadow(0 0 10px rgba(228, 49, 43, 0.8));
-    animation: pulseHigh 3s infinite;
+    fill: rgba(228, 49, 43, 1);
+    filter: drop-shadow(0 0 15px rgba(228, 49, 43, 0.9));
+    animation: pulseHigh 4s infinite;
 }
 
-/* Hover effects */
-.country:hover {
-    opacity: 0.9;
-}
-
-/* Animations */
+/* Updated animations for better glow effects */
 @keyframes pulseMedium {
-    0% { filter: drop-shadow(0 0 5px rgba(228, 49, 43, 0.5)); }
-    50% { filter: drop-shadow(0 0 8px rgba(228, 49, 43, 0.6)); }
-    100% { filter: drop-shadow(0 0 5px rgba(228, 49, 43, 0.5)); }
+    0% { filter: drop-shadow(0 0 8px rgba(228, 49, 43, 0.6)); }
+    50% { filter: drop-shadow(0 0 12px rgba(228, 49, 43, 0.7)); }
+    100% { filter: drop-shadow(0 0 8px rgba(228, 49, 43, 0.6)); }
 }
 
 @keyframes pulseHigh {
-    0% { filter: drop-shadow(0 0 10px rgba(228, 49, 43, 0.8)); }
-    50% { filter: drop-shadow(0 0 15px rgba(228, 49, 43, 1)); }
-    100% { filter: drop-shadow(0 0 10px rgba(228, 49, 43, 0.8)); }
+    0% { filter: drop-shadow(0 0 15px rgba(228, 49, 43, 0.9)); }
+    50% { filter: drop-shadow(0 0 25px rgba(228, 49, 43, 1)); }
+    100% { filter: drop-shadow(0 0 15px rgba(228, 49, 43, 0.9)); }
 }
 
 .country-list {
