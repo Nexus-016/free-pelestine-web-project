@@ -1,81 +1,115 @@
 function initDashboard() {
-    // Initialize the map
-    const map = L.map('world-map').setView([20, 0], 2);
-    window.map = map; // Store map reference globally
+    // Initialize map with optimized settings
+    const map = L.map('world-map', {
+        minZoom: 2,
+        maxZoom: 5,
+        maxBounds: [[-60, -170], [85, 170]],
+        zoomSnap: 0.5,
+        zoomDelta: 0.5,
+        wheelDebounceTime: 150,
+        attributionControl: false // We'll add custom attribution
+    }).setView([30, 0], 2);
     
-    // Add dark theme tile layer
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-        attribution: '&copy; OpenStreetMap contributors'
+    window.map = map;
+
+    // Add dark theme tile layer with custom attribution
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}.png', {
+        attribution: '',
+        noWrap: true,
+        bounds: [[-60, -170], [85, 170]]
     }).addTo(map);
 
-    // Load GeoJSON data
+    // Add custom attribution
+    const attribution = L.control.attribution({
+        prefix: false,
+        position: 'bottomright'
+    }).addTo(map);
+    attribution.addAttribution('<small>© OpenStreetMap</small>');
+
+    // Load and add GeoJSON with optimized settings
     fetch("https://unpkg.com/world-atlas@2/countries-110m.json")
         .then(res => res.json())
         .then(world => {
             const geoJson = topojson.feature(world, world.objects.countries);
             window.mapData = geoJson;
 
-            // Add GeoJSON layer with custom style
+            // Add optimized GeoJSON layer
             L.geoJSON(geoJson, {
+                interactive: true,
                 style: function(feature) {
                     return {
                         fillColor: '#2D2D2D',
-                        weight: 1,
-                        opacity: 1,
+                        weight: 0.5,
+                        opacity: 0.8,
                         color: '#121212',
-                        fillOpacity: 0.7
+                        fillOpacity: 0.7,
+                        smoothFactor: 2
                     };
                 },
                 onEachFeature: function(feature, layer) {
-                    // Store layer reference by country code
                     feature.properties.layer = layer;
-                    layer.bindTooltip(feature.properties.name);
+                    
+                    // Optimize tooltips
+                    layer.bindTooltip(feature.properties.name, {
+                        direction: 'top',
+                        sticky: true,
+                        offset: [0, -5],
+                        opacity: 0.9
+                    });
                 }
             }).addTo(map);
 
-            // Set up Firebase listeners
-            window.db.ref('countries').on('value', updateMapColors);
+            // Set up Firebase listeners with throttling
+            const throttledUpdate = throttle(updateMapColors, 500);
+            window.db.ref('countries').on('value', throttledUpdate);
             window.db.ref('totalSupports').on('value', updateTotalCounter);
         });
 }
 
+// Add throttle function for performance
+function throttle(func, limit) {
+    let inThrottle;
+    return function(...args) {
+        if (!inThrottle) {
+            func.apply(this, args);
+            inThrottle = true;
+            setTimeout(() => inThrottle = false, limit);
+        }
+    }
+}
+
+// Update map colors with optimized performance
 function updateMapColors(snapshot) {
     try {
         const countries = snapshot.val() || {};
         const maxSupport = Math.max(...Object.values(countries).map(c => c.count || 0));
 
-        // Update each country's style based on support
-        Object.entries(countries).forEach(([code, data]) => {
-            const count = data.count || 0;
-            const feature = window.mapData.features.find(f => f.id === code);
-            
-            if (feature && feature.properties.layer) {
-                const layer = feature.properties.layer;
-                const intensity = Math.min(1, count / 20); // Normalize to max 1
+        // Batch updates for better performance
+        requestAnimationFrame(() => {
+            Object.entries(countries).forEach(([code, data]) => {
+                const count = data.count || 0;
+                const feature = window.mapData.features.find(f => f.id === code);
                 
-                // Calculate support level
-                let supportClass = '';
-                if (count >= maxSupport * 0.7) supportClass = 'high-support';
-                else if (count >= maxSupport * 0.3) supportClass = 'medium-support';
-                else if (count > 0) supportClass = 'low-support';
+                if (feature?.properties?.layer) {
+                    const layer = feature.properties.layer;
+                    const intensity = Math.min(1, count / maxSupport);
+                    
+                    layer.setStyle({
+                        fillColor: `rgba(228, 49, 43, ${intensity})`,
+                        fillOpacity: 0.7 + (intensity * 0.3)
+                    });
 
-                // Apply styles
-                layer.setStyle({
-                    fillColor: `rgba(228, 49, 43, ${intensity})`,
-                    className: supportClass
-                });
-
-                // Update tooltip
-                layer.bindTooltip(
-                    `${data.name}: ${count.toLocaleString()} supporters`,
-                    { className: supportClass + '-tooltip' }
-                );
-            }
+                    // Update tooltip content
+                    layer.unbindTooltip();
+                    layer.bindTooltip(
+                        `${data.name}: ${count.toLocaleString()}`,
+                        { className: getSupportClass(count) + '-tooltip' }
+                    );
+                }
+            });
         });
 
-        // Update top countries list
         updateTopCountries(countries);
-
     } catch (error) {
         console.error('[Dashboard] Map update error:', error);
     }

@@ -76,9 +76,10 @@ body {
     color: var(--palestine-green);
 }
 
+/* Map container optimization */
 #world-map {
-    height: 500px;
-    background: var(--dark-secondary);
+    height: 600px;
+    background: var(--dark-bg);
     border-radius: 8px;
     overflow: hidden;
     padding: 1rem;
@@ -93,12 +94,51 @@ body {
     max-height: 70vh;
 }
 
-/* Leaflet country styles */
+/* Optimize Leaflet styles */
 .leaflet-container {
     background: var(--dark-bg) !important;
 }
 
-/* Enhanced glow effects for countries */
+.leaflet-control-attribution {
+    background: rgba(18, 18, 18, 0.8) !important;
+    color: rgba(224, 224, 224, 0.7) !important;
+    font-size: 10px !important;
+    padding: 2px 5px !important;
+    border-radius: 3px !important;
+}
+
+.leaflet-control-attribution a {
+    color: rgba(224, 224, 224, 0.7) !important;
+}
+
+/* Optimize tooltips */
+.leaflet-tooltip {
+    padding: 4px 8px;
+    font-size: 12px;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    border: none;
+}
+
+.high-support-tooltip {
+    background: rgba(228, 49, 43, 0.95);
+    color: white;
+    box-shadow: 0 0 10px rgba(228, 49, 43, 0.8);
+}
+
+.medium-support-tooltip {
+    background: rgba(228, 49, 43, 0.8);
+    color: white;
+    box-shadow: 0 0 8px rgba(228, 49, 43, 0.6);
+}
+
+.low-support-tooltip {
+    background: rgba(228, 49, 43, 0.6);
+    color: white;
+    box-shadow: 0 0 5px rgba(228, 49, 43, 0.4);
+}
+
+/* Leaflet country styles */
 .country {
     fill: var(--dark-secondary);
     stroke: var(--dark-bg);
@@ -133,25 +173,6 @@ body {
             drop-shadow(0 0 25px rgba(228, 49, 43, 0.8))
             drop-shadow(0 0 40px rgba(228, 49, 43, 0.6)) !important;
     animation: glowHigh 3s infinite, pulseHigh 2s infinite;
-}
-
-/* Tooltip styles */
-.high-support-tooltip {
-    background: rgba(228, 49, 43, 0.9);
-    border: none;
-    box-shadow: 0 0 10px rgba(228, 49, 43, 0.8);
-}
-
-.medium-support-tooltip {
-    background: rgba(228, 49, 43, 0.7);
-    border: none;
-    box-shadow: 0 0 8px rgba(228, 49, 43, 0.6);
-}
-
-.low-support-tooltip {
-    background: rgba(228, 49, 43, 0.5);
-    border: none;
-    box-shadow: 0 0 5px rgba(228, 49, 43, 0.4);
 }
 
 /* Enhanced glow animations */
