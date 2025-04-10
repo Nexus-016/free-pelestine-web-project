@@ -64,9 +64,32 @@
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
+        
+        // Test connection
+        db.ref('.info/connected').on('value', function(snap) {
+            if (snap.val() === true) {
+                console.log('Connected to Firebase');
+            } else {
+                console.log('Not connected to Firebase');
+            }
+        });
     </script>
 
     <!-- Your script -->
+    <script>
+        // Wait for DOM and Firebase to be ready
+        window.addEventListener('load', function() {
+            const supportBtn = document.getElementById('support-btn');
+            if (supportBtn) {
+                console.log('Support button found');
+                supportBtn.addEventListener('click', function() {
+                    console.log('Button clicked');
+                });
+            } else {
+                console.error('Support button not found');
+            }
+        });
+    </script>
     <script src="script.js"></script>
 </body>
 </html>
