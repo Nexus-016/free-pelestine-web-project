@@ -1,83 +1,75 @@
 function initDashboard() {
-    window.addEventListener('mapDataReady', () => {
-        const worldMap = document.getElementById('world-map');
-        if (!worldMap) return;
+    // Initialize the map
+    const map = L.map('world-map').setView([20, 0], 2);
+    window.map = map; // Store map reference globally
+    
+    // Add dark theme tile layer
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
 
-        worldMap.innerHTML = '';
-        const width = worldMap.clientWidth;
-        const height = width * 0.5;
-        
-        const svg = d3.select('#world-map')
-            .append('svg')
-            .attr('viewBox', '0 0 960 480')
-            .attr('width', width)
-            .attr('height', height);
+    // Load GeoJSON data
+    fetch("https://unpkg.com/world-atlas@2/countries-110m.json")
+        .then(res => res.json())
+        .then(world => {
+            const geoJson = topojson.feature(world, world.objects.countries);
+            window.mapData = geoJson;
 
-        // Create projection
-        const projection = d3.geoMercator()
-            .fitSize([960, 480], window.mapData);
+            // Add GeoJSON layer with custom style
+            L.geoJSON(geoJson, {
+                style: function(feature) {
+                    return {
+                        fillColor: '#2D2D2D',
+                        weight: 1,
+                        opacity: 1,
+                        color: '#121212',
+                        fillOpacity: 0.7
+                    };
+                },
+                onEachFeature: function(feature, layer) {
+                    // Store layer reference by country code
+                    feature.properties.layer = layer;
+                    layer.bindTooltip(feature.properties.name);
+                }
+            }).addTo(map);
 
-        // Create path generator
-        const path = d3.geoPath().projection(projection);
-
-        // Draw countries
-        svg.selectAll('path')
-            .data(window.mapData.features)
-            .enter()
-            .append('path')
-            .attr('d', path)
-            .attr('id', d => `country-${d.id}`)
-            .attr('class', 'country')
-            .attr('data-name', d => d.properties.name);
-
-        // Set up Firebase listeners
-        window.db.ref('countries').on('value', updateMapColors);
-        window.db.ref('totalSupports').on('value', updateTotalCounter);
-    });
+            // Set up Firebase listeners
+            window.db.ref('countries').on('value', updateMapColors);
+            window.db.ref('totalSupports').on('value', updateTotalCounter);
+        });
 }
 
 function updateMapColors(snapshot) {
     try {
         const countries = snapshot.val() || {};
         const maxSupport = Math.max(...Object.values(countries).map(c => c.count || 0));
-        
-        // Reset all countries
-        document.querySelectorAll('.country').forEach(el => {
-            el.classList.remove('high-support', 'medium-support', 'low-support');
-            el.style.transition = 'all 0.5s ease';
-        });
 
-        // Update countries with support and glow effects
+        // Update each country's style based on support
         Object.entries(countries).forEach(([code, data]) => {
             const count = data.count || 0;
-            const element = document.querySelector(`#country-${code}`);
+            const feature = window.mapData.features.find(f => f.id === code);
             
-            if (element) {
-                // Remove old classes
-                element.classList.remove('high-support', 'medium-support', 'low-support');
+            if (feature && feature.properties.layer) {
+                const layer = feature.properties.layer;
+                const intensity = Math.min(1, count / 20); // Normalize to max 1
                 
-                // Calculate percentage of max support
-                const percentage = (count / maxSupport) * 100;
+                // Calculate support level
+                let supportClass = '';
+                if (count >= maxSupport * 0.7) supportClass = 'high-support';
+                else if (count >= maxSupport * 0.3) supportClass = 'medium-support';
+                else if (count > 0) supportClass = 'low-support';
 
-                // Add new class based on support level
-                if (percentage >= 70) {
-                    element.classList.add('high-support');
-                } else if (percentage >= 30) {
-                    element.classList.add('medium-support');
-                } else if (count > 0) {
-                    element.classList.add('low-support');
-                }
+                // Apply styles
+                layer.setStyle({
+                    fillColor: `rgba(228, 49, 43, ${intensity})`,
+                    className: supportClass
+                });
 
-                // Add tooltip
-                element.setAttribute('title', `${data.name}: ${count.toLocaleString()} supporters`);
-                
-                // Add custom glow intensity based on exact count
-                const glowIntensity = Math.min(1, count / 20); // Normalize to max 1
-                const glowColor = `rgba(228, 49, 43, ${glowIntensity})`;
-                element.style.filter = `
-                    drop-shadow(0 0 ${5 + (glowIntensity * 10)}px ${glowColor})
-                    drop-shadow(0 0 ${10 + (glowIntensity * 20)}px ${glowColor})
-                `;
+                // Update tooltip
+                layer.bindTooltip(
+                    `${data.name}: ${count.toLocaleString()} supporters`,
+                    { className: supportClass + '-tooltip' }
+                );
             }
         });
 

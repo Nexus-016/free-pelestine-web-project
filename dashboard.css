@@ -77,8 +77,10 @@ body {
 }
 
 #world-map {
+    height: 500px;
     background: var(--dark-secondary);
     border-radius: 8px;
+    overflow: hidden;
     padding: 1rem;
     margin: 2rem 0;
     width: 100%;
@@ -89,6 +91,11 @@ body {
     width: 100%;
     height: auto;
     max-height: 70vh;
+}
+
+/* Leaflet country styles */
+.leaflet-container {
+    background: var(--dark-bg) !important;
 }
 
 /* Enhanced glow effects for countries */
@@ -108,7 +115,7 @@ body {
 .low-support {
     fill: rgba(228, 49, 43, 0.4);
     filter: drop-shadow(0 0 5px rgba(228, 49, 43, 0.6))
-            drop-shadow(0 0 15px rgba(228, 49, 43, 0.4));
+            drop-shadow(0 0 15px rgba(228, 49, 43, 0.4)) !important;
     animation: glowLow 3s infinite, pulseLow 2s infinite;
 }
 
@@ -116,7 +123,7 @@ body {
     fill: rgba(228, 49, 43, 0.7);
     filter: drop-shadow(0 0 8px rgba(228, 49, 43, 0.8))
             drop-shadow(0 0 20px rgba(228, 49, 43, 0.6))
-            drop-shadow(0 0 30px rgba(228, 49, 43, 0.4));
+            drop-shadow(0 0 30px rgba(228, 49, 43, 0.4)) !important;
     animation: glowMedium 3s infinite, pulseMedium 2s infinite;
 }
 
@@ -124,8 +131,27 @@ body {
     fill: rgba(228, 49, 43, 1);
     filter: drop-shadow(0 0 10px rgba(228, 49, 43, 1))
             drop-shadow(0 0 25px rgba(228, 49, 43, 0.8))
-            drop-shadow(0 0 40px rgba(228, 49, 43, 0.6));
+            drop-shadow(0 0 40px rgba(228, 49, 43, 0.6)) !important;
     animation: glowHigh 3s infinite, pulseHigh 2s infinite;
+}
+
+/* Tooltip styles */
+.high-support-tooltip {
+    background: rgba(228, 49, 43, 0.9);
+    border: none;
+    box-shadow: 0 0 10px rgba(228, 49, 43, 0.8);
+}
+
+.medium-support-tooltip {
+    background: rgba(228, 49, 43, 0.7);
+    border: none;
+    box-shadow: 0 0 8px rgba(228, 49, 43, 0.6);
+}
+
+.low-support-tooltip {
+    background: rgba(228, 49, 43, 0.5);
+    border: none;
+    box-shadow: 0 0 5px rgba(228, 49, 43, 0.4);
 }
 
 /* Enhanced glow animations */
