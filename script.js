@@ -1,5 +1,3 @@
-const db = firebase.database();
-
 // Simple function to handle the support action
 function handleSupport(button) {
     console.log('Support handler called');
@@ -9,19 +7,27 @@ function handleSupport(button) {
     checkbox.classList.add('show');
     button.disabled = true;
 
-    // Simple Firebase update
-    db.ref('totalSupports').transaction(current => (current || 0) + 1)
+    // Simple Firebase update using global db
+    window.db.ref('totalSupports').transaction(current => (current || 0) + 1)
         .then(() => {
             console.log('Support recorded');
             document.getElementById('thank-you').classList.remove('hidden');
             document.getElementById('share-section').classList.remove('hidden');
             localStorage.setItem('palestine_support_recorded', 'true');
+            updateSupporterCount();
         })
         .catch(error => {
             console.error('Error:', error);
             checkbox.classList.remove('show');
             button.disabled = false;
         });
+}
+
+// Update supporter count function
+async function updateSupporterCount() {
+    const snapshot = await window.db.ref('totalSupports').get();
+    const count = snapshot.val() || 0;
+    document.getElementById('supporter-count').textContent = count.toLocaleString();
 }
 
 // Add click listener when document is ready
@@ -36,11 +42,10 @@ document.addEventListener('DOMContentLoaded', function() {
             button.querySelector('.checkbox-tick').classList.add('show');
             document.getElementById('thank-you').classList.remove('hidden');
             document.getElementById('share-section').classList.remove('hidden');
+            updateSupporterCount();
         } else {
             // Add click handler
-            button.onclick = function() {
-                handleSupport(this);
-            };
+            button.onclick = handleSupport.bind(null, button);
         }
     }
 });
@@ -56,7 +61,7 @@ function share(platform) {
 }
 
 // Add this to test the connection
-db.ref('test').on('value', (snapshot) => {
+window.db.ref('test').on('value', (snapshot) => {
     console.log('Firebase connection successful');
 });
 

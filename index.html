@@ -58,35 +58,19 @@
             messagingSenderId: "1050986196348",
             appId: "1:1050986196348:web:44b91612eea60baea988f9",
             measurementId: "G-BC9ZS8VLFK",
-            databaseURL: "https://voice-for-palestine-by-nex-default-rtdb.firebaseio.com"
+            databaseURL: "https://voice-for-palestine-by-nex-default-rtdb.asia-southeast1.firebasedatabase.app" // Updated URL
         };
 
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
+        window.db = firebase.database(); // Make db global
         
         // Test connection
-        db.ref('.info/connected').on('value', function(snap) {
+        window.db.ref('.info/connected').on('value', function(snap) {
             if (snap.val() === true) {
                 console.log('Connected to Firebase');
             } else {
                 console.log('Not connected to Firebase');
-            }
-        });
-    </script>
-
-    <!-- Your script -->
-    <script>
-        // Wait for DOM and Firebase to be ready
-        window.addEventListener('load', function() {
-            const supportBtn = document.getElementById('support-btn');
-            if (supportBtn) {
-                console.log('Support button found');
-                supportBtn.addEventListener('click', function() {
-                    console.log('Button clicked');
-                });
-            } else {
-                console.error('Support button not found');
             }
         });
     </script>
