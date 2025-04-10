@@ -2,17 +2,19 @@ import { db } from './firebase-config.js';
 import { ref, onValue } from 'firebase/database';
 
 let worldMap;
-let supportData = {};
 
+// Initialize the map
 async function initDashboard() {
     // Load world map data
-    const response = await fetch('https://unpkg.com/world-atlas@2/countries-110m.json');
-    const topology = await response.json();
+    const topology = await fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json')
+        .then(response => response.json());
+
     const countries = topojson.feature(topology, topology.objects.countries);
 
     // Set up D3 map
-    const width = 1000;
-    const height = 600;
+    const width = document.getElementById('world-map').clientWidth;
+    const height = 500;
+    
     const svg = d3.select('#world-map')
         .append('svg')
         .attr('width', width)
@@ -23,7 +25,7 @@ async function initDashboard() {
 
     const path = d3.geoPath().projection(projection);
 
-    // Draw countries
+    // Draw base map
     svg.selectAll('path')
         .data(countries.features)
         .enter()
@@ -32,42 +34,45 @@ async function initDashboard() {
         .attr('class', 'country')
         .attr('id', d => `country-${d.id}`);
 
-    // Listen to Firebase updates
-    const supportsRef = ref(db, 'supports');
-    onValue(supportsRef, (snapshot) => {
-        supportData = snapshot.val() || {};
-        updateMapVisualization();
-        updateCounterAndList();
+    // Listen for support updates
+    window.db.ref('supports').on('value', snapshot => {
+        const supports = snapshot.val() || {};
+        updateMapColors(supports);
+        updateTopCountries(supports);
+    });
+
+    // Listen for total supports
+    window.db.ref('totalSupports').on('value', snapshot => {
+        const total = snapshot.val() || 0;
+        document.getElementById('total-counter').textContent = total.toLocaleString();
     });
 }
 
-function updateMapVisualization() {
-    const maxSupports = Math.max(...Object.values(supportData));
+function updateMapColors(supports) {
+    const maxSupport = Math.max(...Object.values(supports));
     
-    Object.entries(supportData).forEach(([countryCode, count]) => {
-        const intensity = count / maxSupports;
+    Object.entries(supports).forEach(([countryCode, count]) => {
+        const intensity = count / maxSupport;
         const element = document.querySelector(`#country-${countryCode}`);
         if (element) {
             element.style.fill = `rgba(20, 153, 84, ${intensity})`;
-            if (intensity > 0.5) {
+            if (intensity > 0.3) {
                 element.classList.add('country-glow');
             }
         }
     });
 }
 
-function updateCounterAndList() {
-    const total = Object.values(supportData).reduce((a, b) => a + b, 0);
-    document.getElementById('total-counter').textContent = total.toLocaleString();
-
-    const topCountries = Object.entries(supportData)
+function updateTopCountries(supports) {
+    const sortedCountries = Object.entries(supports)
         .sort(([,a], [,b]) => b - a)
         .slice(0, 10);
 
     const list = document.getElementById('top-countries');
-    list.innerHTML = topCountries
-        .map(([code, count]) => `<li>${getCountryName(code)}: ${count.toLocaleString()}</li>`)
+    list.innerHTML = sortedCountries
+        .map(([code, count]) => `<li>${code}: ${count.toLocaleString()} supports</li>`)
         .join('');
 }
 
-initDashboard();
+// Initialize dashboard when document is ready
+document.addEventListener('DOMContentLoaded', initDashboard);

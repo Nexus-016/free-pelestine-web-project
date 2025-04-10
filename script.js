@@ -1,26 +1,46 @@
 // Simple function to handle the support action
-function handleSupport(button) {
+async function handleSupport(button) {
     console.log('Support handler called');
     const checkbox = button.querySelector('.checkbox-tick');
     
-    // Show checkbox immediately for feedback
-    checkbox.classList.add('show');
-    button.disabled = true;
+    try {
+        // Get user location
+        const locationResponse = await fetch('https://ipapi.co/json/');
+        const locationData = await locationResponse.json();
+        console.log('Location data:', locationData);
 
-    // Simple Firebase update using global db
-    window.db.ref('totalSupports').transaction(current => (current || 0) + 1)
-        .then(() => {
-            console.log('Support recorded');
-            document.getElementById('thank-you').classList.remove('hidden');
-            document.getElementById('share-section').classList.remove('hidden');
-            localStorage.setItem('palestine_support_recorded', 'true');
-            updateSupporterCount();
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            checkbox.classList.remove('show');
-            button.disabled = false;
-        });
+        // Show checkbox immediately for feedback
+        checkbox.classList.add('show');
+        button.disabled = true;
+
+        // Prepare updates for Firebase
+        const updates = {};
+        updates['totalSupports'] = firebase.database.ServerValue.increment(1);
+        updates[`supports/${locationData.country}`] = firebase.database.ServerValue.increment(1);
+        updates[`supporters/${Date.now()}`] = {
+            country: locationData.country,
+            city: locationData.city,
+            timestamp: firebase.database.ServerValue.TIMESTAMP,
+            latitude: locationData.latitude,
+            longitude: locationData.longitude
+        };
+
+        // Update Firebase
+        await window.db.ref().update(updates);
+        console.log('Support recorded with location');
+
+        // Update UI
+        document.getElementById('thank-you').classList.remove('hidden');
+        document.getElementById('share-section').classList.remove('hidden');
+        localStorage.setItem('palestine_support_recorded', 'true');
+        updateSupporterCount();
+
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Error recording support. Please try again.');
+        checkbox.classList.remove('show');
+        button.disabled = false;
+    }
 }
 
 // Update supporter count function
