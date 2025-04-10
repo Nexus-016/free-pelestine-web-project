@@ -95,11 +95,16 @@ document.addEventListener("DOMContentLoaded", () => {
     function checkVotingStatus() {
         const hasVoted = localStorage.getItem(HAS_VOTED_KEY);
         if (hasVoted) {
-            supportButton.disabled = true;
-            supportButton.textContent = "You have already voted";
-            thankYouMessage.classList.remove("hidden");
-            disableSupportSideRadios();
+            disableVotingUI();
         }
+    }
+
+    // Disable voting UI after the user has voted
+    function disableVotingUI() {
+        supportButton.disabled = true;
+        supportButton.textContent = "You have already voted";
+        thankYouMessage.classList.remove("hidden");
+        disableSupportSideRadios();
     }
 
     // Disable all support side radio buttons
@@ -134,10 +139,8 @@ document.addEventListener("DOMContentLoaded", () => {
             // Mark the user as having voted
             localStorage.setItem(HAS_VOTED_KEY, "true");
 
-            thankYouMessage.classList.remove("hidden");
-            supportButton.disabled = true;
-            supportButton.textContent = "You have already voted";
-            disableSupportSideRadios();
+            // Disable voting UI
+            disableVotingUI();
         } catch (error) {
             console.error("Error updating supporter data:", error);
         }
