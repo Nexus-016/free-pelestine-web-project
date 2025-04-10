@@ -7,27 +7,67 @@ const countryNames = {
     // Add more as needed...
 };
 
+// Add at the top of file
+const API_LIMITS = {
+    'db-ip': 1000, // 1000 requests per day
+    'ipapi': 1000, // 1000 requests per day
+    'ipwho': 10000 // 10000 requests per day
+};
+
+// Update getLocationData function
 async function getLocationData() {
-    try {
-        // Try db-ip API directly since it works
-        const response = await fetch('https://api.db-ip.com/v2/free/self');
-        const data = await response.json();
-        console.log('Location data:', data);
-        
-        return {
-            country: data.countryCode || 'UNKNOWN',
-            countryName: data.countryName || 'Unknown Country'
-        };
-    } catch (error) {
-        console.error('Location fetch error:', error);
-        return {
-            country: 'UNKNOWN',
-            countryName: 'Unknown Country'
-        };
+    // Try multiple APIs in sequence
+    const apis = [
+        {
+            url: 'https://api.db-ip.com/v2/free/self',
+            handler: (data) => ({
+                country: data.countryCode,
+                countryName: data.countryName
+            })
+        },
+        {
+            url: 'https://ipwho.is/',
+            handler: (data) => ({
+                country: data.country_code,
+                countryName: data.country
+            })
+        },
+        {
+            url: 'https://ipapi.co/json/',
+            handler: (data) => ({
+                country: data.country_code,
+                countryName: data.country_name
+            })
+        }
+    ];
+
+    for (const api of apis) {
+        try {
+            console.log(`Trying ${api.url}...`);
+            const response = await fetch(api.url);
+            if (!response.ok) {
+                console.log(`Failed with status: ${response.status}`);
+                continue;
+            }
+            const data = await response.json();
+            console.log('API Response:', data);
+            
+            return api.handler(data);
+        } catch (error) {
+            console.log(`API failed:`, error);
+            continue;
+        }
     }
+
+    // If all APIs fail, return unknown
+    console.warn('All location APIs failed');
+    return {
+        country: 'UNKNOWN',
+        countryName: 'Unknown Country'
+    };
 }
 
-// Update handleSupport function
+// Update handleSupport function to handle rate limits
 async function handleSupport(button) {
     console.log('Support handler called');
     const checkbox = button.querySelector('.checkbox-tick');
@@ -39,20 +79,23 @@ async function handleSupport(button) {
         const locationData = await getLocationData();
         console.log('Location data:', locationData);
 
-        // Simplified updates for Firebase
-        const updates = {};
-        updates['totalSupports'] = firebase.database.ServerValue.increment(1);
-        
-        if (locationData.country !== 'UNKNOWN') {
+        if (locationData.country === 'UNKNOWN') {
+            // Still record support but inform about location issue
+            const updates = {
+                'totalSupports': firebase.database.ServerValue.increment(1),
+                'unknownLocation': firebase.database.ServerValue.increment(1)
+            };
+            await window.db.ref().update(updates);
+        } else {
+            // Normal location update
+            const updates = {};
+            updates['totalSupports'] = firebase.database.ServerValue.increment(1);
             updates[`countries/${locationData.country}`] = {
                 name: locationData.countryName,
                 count: firebase.database.ServerValue.increment(1)
             };
+            await window.db.ref().update(updates);
         }
-
-        // Update Firebase
-        await window.db.ref().update(updates);
-        console.log('Support recorded');
 
         // Update UI
         document.getElementById('thank-you').classList.remove('hidden');

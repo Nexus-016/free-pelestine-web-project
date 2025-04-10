@@ -4,17 +4,41 @@
 // Initialize the map
 async function initDashboard() {
     try {
-        console.log('Initializing dashboard...');
+        console.log('[Dashboard] Starting initialization...');
+        
+        if (!window.d3) {
+            throw new Error('D3.js not loaded');
+        }
+        if (!window.topojson) {
+            throw new Error('Topojson not loaded');
+        }
+        if (!window.db) {
+            throw new Error('Firebase database not initialized');
+        }
+
         // Load world map data
-        const topology = await fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json')
-            .then(response => response.json());
+        console.log('[Dashboard] Fetching map data...');
+        const response = await fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json');
+        if (!response.ok) {
+            throw new Error(`Map data fetch failed: ${response.status}`);
+        }
+        const topology = await response.json();
+        console.log('[Dashboard] Map data loaded');
 
         const countries = topojson.feature(topology, topology.objects.countries);
-        console.log('Map data loaded');
+        const worldMap = document.getElementById('world-map');
+        
+        if (!worldMap) {
+            throw new Error('World map container not found');
+        }
 
-        // Set up D3 map
-        const width = document.getElementById('world-map').clientWidth;
+        const width = worldMap.clientWidth || 800;
         const height = 500;
+        
+        console.log('[Dashboard] Setting up SVG with dimensions:', { width, height });
+        
+        // Clear any existing SVG
+        worldMap.innerHTML = '';
         
         const svg = d3.select('#world-map')
             .append('svg')
@@ -33,48 +57,105 @@ async function initDashboard() {
             .append('path')
             .attr('d', path)
             .attr('class', 'country')
-            .attr('id', d => `country-${d.id}`);
+            .attr('id', d => {
+                console.log('Country data:', d);
+                return `country-${d.id}`;
+            });
 
-        console.log('Base map drawn');
+        console.log('[Dashboard] Base map drawn');
 
-        // Listen for support updates
+        // Set up Firebase listeners
+        console.log('[Dashboard] Setting up Firebase listeners...');
+        
         window.db.ref('countries').on('value', snapshot => {
-            console.log('Countries update received:', snapshot.val());
+            console.log('[Dashboard] Countries update:', snapshot.val());
             const countries = snapshot.val() || {};
             updateMapColors(countries);
             updateTopCountries(countries);
+        }, error => {
+            console.error('[Dashboard] Firebase countries error:', error);
         });
 
-        // Listen for total supports
         window.db.ref('totalSupports').on('value', snapshot => {
-            console.log('Total supports update:', snapshot.val());
+            console.log('[Dashboard] Total supports update:', snapshot.val());
             const total = snapshot.val() || 0;
-            document.getElementById('total-counter').textContent = total.toLocaleString();
+            const counter = document.getElementById('total-counter');
+            if (counter) {
+                counter.textContent = total.toLocaleString();
+            }
+        }, error => {
+            console.error('[Dashboard] Firebase total supports error:', error);
         });
+
+        addMapInteractions();
+        console.log('[Dashboard] Initialization complete');
 
     } catch (error) {
-        console.error('Dashboard initialization error:', error);
+        console.error('[Dashboard] Initialization error:', error);
+        // Show error to user
+        const container = document.querySelector('.dashboard-container');
+        if (container) {
+            container.innerHTML += `
+                <div style="color: var(--palestine-red); padding: 1rem; text-align: center;">
+                    Error loading dashboard. Please refresh the page.
+                    <br>
+                    Error details: ${error.message}
+                </div>
+            `;
+        }
     }
 }
 
 function updateMapColors(countries) {
     try {
-        const supportCounts = Object.values(countries).map(c => c.count || 0);
-        const maxSupport = Math.max(...supportCounts, 1); // Ensure non-zero denominator
-        
+        if (!countries || typeof countries !== 'object') {
+            throw new Error('Invalid countries data');
+        }
+
+        const supportCounts = Object.values(countries).map(c => (c && c.count) || 0);
+        if (supportCounts.length === 0) {
+            console.log('[Dashboard] No support data yet');
+            return;
+        }
+
+        const maxSupport = Math.max(...supportCounts, 1);
+        console.log('[Dashboard] Max support count:', maxSupport);
+
         Object.entries(countries).forEach(([code, data]) => {
-            const intensity = (data.count || 0) / maxSupport;
             const element = document.querySelector(`#country-${code}`);
             if (element) {
-                element.style.fill = `rgba(20, 153, 84, ${intensity})`;
-                if (intensity > 0.3) {
-                    element.classList.add('country-glow');
-                }
+                const intensity = (data.count || 0) / maxSupport;
+                element.style.fill = `rgba(228, 49, 43, ${intensity * 0.8})`;
+                
+                // Add appropriate glow class
+                element.classList.remove('country-glow-low', 'country-glow-medium', 'country-glow-high');
+                if (intensity > 0.7) element.classList.add('country-glow-high');
+                else if (intensity > 0.4) element.classList.add('country-glow-medium');
+                else if (intensity > 0.1) element.classList.add('country-glow-low');
             }
         });
     } catch (error) {
-        console.error('Error updating map colors:', error);
+        console.error('[Dashboard] Map update error:', error);
     }
+}
+
+function addMapInteractions() {
+    document.querySelectorAll('.country').forEach(country => {
+        country.addEventListener('mouseover', function() {
+            this.style.opacity = '0.8';
+            if (this.classList.contains('country-glow-high')) {
+                this.style.filter = 'drop-shadow(0 0 25px rgba(228, 49, 43, 1))';
+            }
+        });
+
+        country.addEventListener('mouseout', function() {
+            this.style.opacity = '1';
+            // Reset to original glow class
+            if (this.classList.contains('country-glow-high')) {
+                this.style.filter = '';
+            }
+        });
+    });
 }
 
 function updateTopCountries(countries) {
