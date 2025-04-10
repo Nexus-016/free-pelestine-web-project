@@ -41,11 +41,11 @@ document.addEventListener("DOMContentLoaded", () => {
     async function preloadCountryData() {
         try {
             console.log("Fetching country data...");
-            const response = await fetch("country/countries.json");
+            const response = await fetch("country/countries.json"); // Ensure this path is correct
             if (response.ok) {
                 countries = await response.json();
                 console.log("Fetched country data:", countries);
-                populateCountries(Object.keys(countries));
+                populateCountries(Object.keys(countries)); // Populate the dropdown with country names
             } else {
                 console.error("Failed to fetch country data:", response.status);
                 countrySelect.innerHTML = "<option value=''>Failed to load countries</option>";
@@ -99,7 +99,6 @@ document.addEventListener("DOMContentLoaded", () => {
     // Update the supporter count display
     function updateSupportCount() {
         let totalSupporters = 0;
-
         // Ensure supporterData contains only numeric values
         Object.values(supporterData).forEach((count) => {
             if (typeof count === "number") {
@@ -108,7 +107,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 console.warn("Invalid data detected in supporterData:", count);
             }
         });
-
         supportCount.textContent = `${totalSupporters} people have supported so far.`;
     }
 
@@ -150,17 +148,13 @@ document.addEventListener("DOMContentLoaded", () => {
     // Submit support for a country
     supportButton.addEventListener("click", async () => {
         const selectedCountry = countrySelect.value;
-
+        const currentCount = supporterData[selectedCountry] || 0;
         try {
-            const currentCount = supporterData[selectedCountry] || 0;
             await update(ref(database, `supporters/${selectedCountry}`), { count: currentCount + 1 });
             supporterData[selectedCountry] = currentCount + 1;
             updateSupportCount();
-
             // Mark the user as having voted
             localStorage.setItem(HAS_VOTED_KEY, "true");
-
-            // Disable voting UI
             disableVotingUI();
         } catch (error) {
             console.error("Error updating supporter data:", error);
