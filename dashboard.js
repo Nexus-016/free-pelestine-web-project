@@ -44,6 +44,7 @@ function updateMapColors(snapshot) {
         // Reset all countries
         document.querySelectorAll('.country').forEach(el => {
             el.classList.remove('high-support', 'medium-support', 'low-support');
+            el.style.transition = 'all 0.5s ease';
         });
 
         // Update countries with support and glow effects
@@ -52,25 +53,35 @@ function updateMapColors(snapshot) {
             const element = document.querySelector(`#country-${code}`);
             
             if (element) {
-                // Calculate support level based on count
-                if (count >= maxSupport * 0.7) {
+                // Remove old classes
+                element.classList.remove('high-support', 'medium-support', 'low-support');
+                
+                // Calculate percentage of max support
+                const percentage = (count / maxSupport) * 100;
+
+                // Add new class based on support level
+                if (percentage >= 70) {
                     element.classList.add('high-support');
-                } else if (count >= maxSupport * 0.3) {
+                } else if (percentage >= 30) {
                     element.classList.add('medium-support');
                 } else if (count > 0) {
                     element.classList.add('low-support');
                 }
 
-                // Add tooltip with support count
+                // Add tooltip
                 element.setAttribute('title', `${data.name}: ${count.toLocaleString()} supporters`);
                 
-                // Add data attributes for filtering
-                element.setAttribute('data-support-count', count);
-                element.setAttribute('data-country-name', data.name);
+                // Add custom glow intensity based on exact count
+                const glowIntensity = Math.min(1, count / 20); // Normalize to max 1
+                const glowColor = `rgba(228, 49, 43, ${glowIntensity})`;
+                element.style.filter = `
+                    drop-shadow(0 0 ${5 + (glowIntensity * 10)}px ${glowColor})
+                    drop-shadow(0 0 ${10 + (glowIntensity * 20)}px ${glowColor})
+                `;
             }
         });
 
-        // Update top countries list with glow indicators
+        // Update top countries list
         updateTopCountries(countries);
 
     } catch (error) {
@@ -115,4 +126,13 @@ function getSupportClass(count) {
     return '';
 }
 
-document.addEventListener('DOMContentLoaded', initDashboard);
+function initializeRealtimeUpdates() {
+    window.db.ref('countries').on('value', snapshot => {
+        updateMapColors(snapshot);
+    });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    initDashboard();
+    initializeRealtimeUpdates();
+});
