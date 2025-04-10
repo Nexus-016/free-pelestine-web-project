@@ -38,8 +38,20 @@ header {
 
 /* Mobile Menu Styles */
 .nav-menu {
-    display: flex;
-    gap: 15px;
+    display: none; /* Hide the menu by default */
+    flex-direction: column;
+    background-color: #D71920; /* Red background for Palestinian theme */
+    position: absolute;
+    top: 100%;
+    right: 0;
+    left: 0;
+    padding: 10px 0;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    z-index: 1000; /* Ensure it appears above other elements */
+}
+
+.nav-menu.active {
+    display: flex; /* Show the menu when active */
 }
 
 .menu-toggle {
@@ -80,7 +92,7 @@ header {
     }
 
     .menu-toggle {
-        display: block;
+        display: block; /* Show the menu toggle button on mobile */
     }
 }
 
