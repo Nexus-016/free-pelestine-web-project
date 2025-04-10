@@ -47,8 +47,18 @@ header {
     background: none;
     border: none;
     color: #ffffff;
-    font-size: 1.5rem;
+    font-size: 1.8rem; /* Slightly smaller size for better appearance */
     cursor: pointer;
+    padding: 5px; /* Add padding for better clickability */
+    border-radius: 50%; /* Make it circular */
+    background-color: #D71920; /* Red background for Palestinian theme */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3); /* Add shadow for a modern look */
+    transition: transform 0.3s ease, background-color 0.3s ease; /* Smooth hover effect */
+}
+
+.menu-toggle:hover {
+    transform: scale(1.1); /* Slight zoom effect on hover */
+    background-color: #005F2E; /* Darker green for hover */
 }
 
 @media (max-width: 768px) {
@@ -62,6 +72,7 @@ header {
         left: 0;
         padding: 10px 0;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        z-index: 1000; /* Ensure it appears above other elements */
     }
 
     .nav-menu.active {
