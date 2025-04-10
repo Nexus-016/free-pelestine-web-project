@@ -95,39 +95,42 @@ body {
     fill: var(--dark-secondary);
     stroke: var(--dark-bg);
     stroke-width: 0.5;
-    transition: all 0.3s ease;
+    transition: all 0.5s ease;
 }
 
 /* Support level styles */
 .low-support {
     fill: rgba(228, 49, 43, 0.3);
-    filter: brightness(1.2);
 }
 
 .medium-support {
     fill: rgba(228, 49, 43, 0.6);
-    filter: brightness(1.4);
-    animation: pulse 2s infinite;
+    filter: drop-shadow(0 0 5px rgba(228, 49, 43, 0.5));
+    animation: pulseMedium 3s infinite;
 }
 
 .high-support {
     fill: rgba(228, 49, 43, 0.9);
-    filter: brightness(1.6);
-    animation: glow 2s infinite;
+    filter: drop-shadow(0 0 10px rgba(228, 49, 43, 0.8));
+    animation: pulseHigh 3s infinite;
 }
 
 /* Hover effects */
 .country:hover {
-    filter: brightness(1.3);
+    opacity: 0.9;
 }
 
 /* Animations */
-@keyframes pulse {
-    50% { filter: brightness(1.6); }
+@keyframes pulseMedium {
+    0% { filter: drop-shadow(0 0 5px rgba(228, 49, 43, 0.5)); }
+    50% { filter: drop-shadow(0 0 8px rgba(228, 49, 43, 0.6)); }
+    100% { filter: drop-shadow(0 0 5px rgba(228, 49, 43, 0.5)); }
 }
 
-@keyframes glow {
-    50% { filter: brightness(1.8) drop-shadow(0 0 10px var(--palestine-red)); }
+@keyframes pulseHigh {
+    0% { filter: drop-shadow(0 0 10px rgba(228, 49, 43, 0.8)); }
+    50% { filter: drop-shadow(0 0 15px rgba(228, 49, 43, 1)); }
+    100% { filter: drop-shadow(0 0 10px rgba(228, 49, 43, 0.8)); }
 }
 
 .country-list {
