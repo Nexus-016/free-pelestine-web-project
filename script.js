@@ -1,33 +1,74 @@
-// Simple function to handle the support action
+// Add new function for getting location
+async function getLocationData() {
+    try {
+        // Try multiple location APIs
+        const apis = [
+            'https://api.ipdata.co?api-key=c6d4d5f3e35f9ae4f8e04f4de3559d49a76c6cba0219f7dd44d81c90',
+            'https://ipwho.is/',
+            'https://api.ipify.org?format=json'
+        ];
+
+        for (const api of apis) {
+            try {
+                const response = await fetch(api);
+                const data = await response.json();
+                return {
+                    country: data.country_code || data.country || 'UNKNOWN',
+                    city: data.city || 'UNKNOWN',
+                    latitude: data.latitude || 0,
+                    longitude: data.longitude || 0
+                };
+            } catch (e) {
+                console.log('Failed with API:', api);
+                continue;
+            }
+        }
+
+        // Fallback if all APIs fail
+        return {
+            country: 'UNKNOWN',
+            city: 'UNKNOWN',
+            latitude: 0,
+            longitude: 0
+        };
+    } catch (error) {
+        console.error('Location fetch error:', error);
+        return null;
+    }
+}
+
+// Update handleSupport function
 async function handleSupport(button) {
     console.log('Support handler called');
     const checkbox = button.querySelector('.checkbox-tick');
     
     try {
-        // Get user location
-        const locationResponse = await fetch('https://ipapi.co/json/');
-        const locationData = await locationResponse.json();
-        console.log('Location data:', locationData);
-
         // Show checkbox immediately for feedback
         checkbox.classList.add('show');
         button.disabled = true;
 
+        // Get location data
+        const locationData = await getLocationData();
+        console.log('Location data:', locationData);
+
         // Prepare updates for Firebase
         const updates = {};
         updates['totalSupports'] = firebase.database.ServerValue.increment(1);
-        updates[`supports/${locationData.country}`] = firebase.database.ServerValue.increment(1);
-        updates[`supporters/${Date.now()}`] = {
-            country: locationData.country,
-            city: locationData.city,
-            timestamp: firebase.database.ServerValue.TIMESTAMP,
-            latitude: locationData.latitude,
-            longitude: locationData.longitude
-        };
+        
+        if (locationData && locationData.country !== 'UNKNOWN') {
+            updates[`supports/${locationData.country}`] = firebase.database.ServerValue.increment(1);
+            updates[`supporters/${Date.now()}`] = {
+                country: locationData.country,
+                city: locationData.city,
+                timestamp: firebase.database.ServerValue.TIMESTAMP,
+                latitude: locationData.latitude,
+                longitude: locationData.longitude
+            };
+        }
 
         // Update Firebase
         await window.db.ref().update(updates);
-        console.log('Support recorded with location');
+        console.log('Support recorded');
 
         // Update UI
         document.getElementById('thank-you').classList.remove('hidden');
@@ -37,9 +78,18 @@ async function handleSupport(button) {
 
     } catch (error) {
         console.error('Error:', error);
-        alert('Error recording support. Please try again.');
-        checkbox.classList.remove('show');
-        button.disabled = false;
+        // Still count the support even if location fails
+        try {
+            await window.db.ref('totalSupports').transaction(current => (current || 0) + 1);
+            document.getElementById('thank-you').classList.remove('hidden');
+            document.getElementById('share-section').classList.remove('hidden');
+            localStorage.setItem('palestine_support_recorded', 'true');
+            updateSupporterCount();
+        } catch (e) {
+            alert('Error recording support. Please try again.');
+            checkbox.classList.remove('show');
+            button.disabled = false;
+        }
     }
 }
 
