@@ -7,9 +7,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const toolsSection = document.getElementById("toolsSection");
     const clearCacheButton = document.getElementById("clearCacheButton");
     const clearDatabaseButton = document.getElementById("clearDatabaseButton");
+    const resetSupportButton = document.getElementById("resetSupportButton");
     const reloadPageButton = document.getElementById("reloadPageButton");
 
     const ACCESS_CODE = "nexus"; // The secret access code
+    const HAS_VOTED_KEY = "hasVoted"; // LocalStorage key for voting status
 
     // Unlock developer tools
     unlockButton.addEventListener("click", () => {
@@ -44,6 +46,14 @@ document.addEventListener("DOMContentLoaded", () => {
                 console.error("Error clearing database:", error);
                 alert("Failed to clear the database. Check the console for details.");
             }
+        }
+    });
+
+    // Reset the support button
+    resetSupportButton.addEventListener("click", () => {
+        if (confirm("Are you sure you want to reset your support button?")) {
+            localStorage.removeItem(HAS_VOTED_KEY);
+            alert("Your support button has been reset. You can now vote again.");
         }
     });
 
