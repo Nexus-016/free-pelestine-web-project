@@ -1,8 +1,8 @@
 import { database } from "./firebase-config.js";
 import { ref, get, update } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
-import { countries, populateCountries } from "./country.js";
+import { preloadCountryData, populateCountries, countries } from "./country.js";
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
     const supportButton = document.getElementById("supportButton");
     const thankYouMessage = document.getElementById("thankYouMessage");
     const supportCount = document.getElementById("supportCount");
@@ -123,6 +123,10 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
+    // Preload country data and populate the dropdown
+    await preloadCountryData();
+    populateCountries(Object.keys(countries), countrySelect);
+
     // Optimize search input with debounce
     countrySearch.addEventListener(
         "input",
@@ -134,9 +138,6 @@ document.addEventListener("DOMContentLoaded", () => {
             populateCountries(filteredCountries, countrySelect);
         }, 300)
     );
-
-    // Populate the dropdown with all countries on page load
-    populateCountries(Object.keys(countries), countrySelect);
 
     // Fetch supporter data on page load
     fetchSupporterData();
