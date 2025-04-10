@@ -105,35 +105,53 @@ body {
     filter: none;
 }
 
-/* Enhanced support level styles */
+/* Enhanced support level styles with stronger glow */
 .low-support {
     fill: rgba(228, 49, 43, 0.4);
-    filter: none;
+    filter: drop-shadow(0 0 2px var(--palestine-red));
 }
 
 .medium-support {
     fill: rgba(228, 49, 43, 0.7);
-    filter: drop-shadow(0 0 8px rgba(228, 49, 43, 0.6));
-    animation: pulseMedium 4s infinite;
+    filter: drop-shadow(0 0 8px var(--palestine-red));
+    animation: pulseMedium 3s infinite;
 }
 
 .high-support {
     fill: rgba(228, 49, 43, 1);
-    filter: drop-shadow(0 0 15px rgba(228, 49, 43, 0.9));
-    animation: pulseHigh 4s infinite;
+    filter: drop-shadow(0 0 15px var(--palestine-red));
+    animation: pulseHigh 3s infinite;
 }
 
-/* Updated animations for better glow effects */
+/* Stronger glow animations */
 @keyframes pulseMedium {
-    0% { filter: drop-shadow(0 0 8px rgba(228, 49, 43, 0.6)); }
-    50% { filter: drop-shadow(0 0 12px rgba(228, 49, 43, 0.7)); }
-    100% { filter: drop-shadow(0 0 8px rgba(228, 49, 43, 0.6)); }
+    0% { 
+        filter: drop-shadow(0 0 8px var(--palestine-red));
+        fill: rgba(228, 49, 43, 0.7);
+    }
+    50% { 
+        filter: drop-shadow(0 0 15px var(--palestine-red));
+        fill: rgba(228, 49, 43, 0.8);
+    }
+    100% { 
+        filter: drop-shadow(0 0 8px var(--palestine-red));
+        fill: rgba(228, 49, 43, 0.7);
+    }
 }
 
 @keyframes pulseHigh {
-    0% { filter: drop-shadow(0 0 15px rgba(228, 49, 43, 0.9)); }
-    50% { filter: drop-shadow(0 0 25px rgba(228, 49, 43, 1)); }
-    100% { filter: drop-shadow(0 0 15px rgba(228, 49, 43, 0.9)); }
+    0% { 
+        filter: drop-shadow(0 0 15px var(--palestine-red));
+        fill: rgba(228, 49, 43, 0.9);
+    }
+    50% { 
+        filter: drop-shadow(0 0 25px var(--palestine-red));
+        fill: rgba(228, 49, 43, 1);
+    }
+    100% { 
+        filter: drop-shadow(0 0 15px var(--palestine-red));
+        fill: rgba(228, 49, 43, 0.9);
+    }
 }
 
 .country-list {
