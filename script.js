@@ -40,7 +40,8 @@ document.addEventListener("DOMContentLoaded", () => {
     // Preload and cache country data
     async function preloadCountryData() {
         try {
-            const response = await fetch("country/countries.json"); // Corrected file path
+            console.log("Fetching country data...");
+            const response = await fetch("country/countries.json"); // Ensure this path is correct
             if (response.ok) {
                 countries = await response.json();
                 console.log("Fetched country data:", countries);
@@ -71,6 +72,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 countrySelect.appendChild(option);
             });
         }
+        console.log("Populated countries:", filteredCountries);
     }
 
     // Fetch supporter data from Firebase
