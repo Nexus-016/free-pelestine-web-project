@@ -1,5 +1,4 @@
-import { db } from './firebase-config.js';
-import { ref, increment, set, get, onValue } from 'firebase/database';
+const db = firebase.database();
 
 let supportCount = 0;
 
@@ -46,8 +45,8 @@ document.getElementById('support-btn').addEventListener('click', async function(
         if (locationData) {
             // Check in Firebase if this IP has already supported
             const ipHash = await generateIPHash();
-            const ipCheckRef = ref(db, `ip_checks/${ipHash}`);
-            const ipSnapshot = await get(ipCheckRef);
+            const ipCheckRef = db.ref(`ip_checks/${ipHash}`);
+            const ipSnapshot = await ipCheckRef.get();
 
             if (ipSnapshot.exists()) {
                 alert('Support has already been recorded from this location.');
@@ -57,19 +56,12 @@ document.getElementById('support-btn').addEventListener('click', async function(
             checkbox.style.display = 'block';
             
             // Update Firebase with location data and IP check
-            const countryRef = ref(db, `supports/${locationData.country}`);
-            const supportRef = ref(db, 'supporters').push();
-            
-            await Promise.all([
-                set(countryRef, increment(1)),
-                set(supportRef, {
-                    timestamp: Date.now(),
-                    country: locationData.country,
-                    city: locationData.city,
-                    coordinates: [locationData.latitude, locationData.longitude]
-                }),
-                set(ipCheckRef, true) // Mark this IP as used
-            ]);
+            const updates = {};
+            updates[`supports/${locationData.country}`] = firebase.database.ServerValue.increment(1);
+            updates[`ip_checks/${ipHash}`] = true;
+            updates['totalSupports'] = firebase.database.ServerValue.increment(1);
+
+            await db.ref().update(updates);
 
             // Mark user as supported locally
             markUserAsSupported();
@@ -106,20 +98,21 @@ async function generateIPHash() {
     }
 }
 
+async function updateSupporterCount() {
+    const snapshot = await db.ref('totalSupports').get();
+    const count = snapshot.val() || 0;
+    document.getElementById('supporter-count').textContent = count.toLocaleString();
+}
+
+// Initialize counter on page load
 document.addEventListener('DOMContentLoaded', function() {
+    updateSupporterCount();
     if (hasUserAlreadySupported()) {
         const button = document.getElementById('support-btn');
         button.disabled = true;
         button.innerHTML = 'Already Supported ✓';
     }
 });
-
-async function updateSupporterCount() {
-    const totalRef = ref(db, 'totalSupports');
-    const snapshot = await get(totalRef);
-    const count = snapshot.val() || 0;
-    document.getElementById('supporter-count').textContent = count.toLocaleString();
-}
 
 function share(platform) {
     const text = "I just stood with Palestine. Join thousands of others: ";
@@ -133,7 +126,7 @@ function share(platform) {
 }
 
 // Add this to test the connection
-onValue(ref(db, 'test'), (snapshot) => {
+db.ref('test').on('value', (snapshot) => {
     console.log('Firebase connection successful');
 });
 

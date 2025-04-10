@@ -7,6 +7,14 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <header class="header">
+        <nav class="nav-links">
+            <a href="index.html" class="active">Support Palestine</a>
+            <a href="dashboard.html">View Dashboard</a>
+            <a href="about.html">About</a>
+        </nav>
+    </header>
+
     <div class="container">
         <h1>Are you human? Prove it by standing with Palestine.</h1>
         <p class="subtext">Join thousands worldwide showing support. One click. One voice.</p>
@@ -35,12 +43,30 @@
         </div>
     </div>
     
-    <!-- Add Firebase SDK before your scripts -->
-    <script type="module">
-        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.6.0/firebase-app.js';
-        import { getAnalytics } from 'https://www.gstatic.com/firebasejs/10.6.0/firebase-analytics.js';
-        import { getDatabase } from 'https://www.gstatic.com/firebasejs/10.6.0/firebase-database.js';
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.6.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.6.0/firebase-analytics-compat.js"></script>
+
+    <!-- Initialize Firebase -->
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAtFiyXzaSr8D7bvgxcJ74FI-ouvE9lxIg",
+            authDomain: "voice-for-palestine-by-nex.firebaseapp.com",
+            projectId: "voice-for-palestine-by-nex",
+            storageBucket: "voice-for-palestine-by-nex.firebasestorage.app",
+            messagingSenderId: "1050986196348",
+            appId: "1:1050986196348:web:44b91612eea60baea988f9",
+            measurementId: "G-BC9ZS8VLFK",
+            databaseURL: "https://voice-for-palestine-by-nex-default-rtdb.firebaseio.com"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
     </script>
-    <script type="module" src="script.js"></script>
+
+    <!-- Your script -->
+    <script src="script.js"></script>
 </body>
 </html>
