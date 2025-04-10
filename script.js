@@ -29,52 +29,30 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (Object.keys(countries).length > 0) {
         populateCountries(Object.keys(countries), countrySelect);
     } else {
-        console.warn("Using fallback country data."); debounce
+        console.warn("Using fallback country data.");
         populateCountries(fallbackCountries, countrySelect);
-    }        let timeout;
+    }
 
     // Optimize search input with debounce
-    function debounce(func, delay) {            timeout = setTimeout(() => func(...args), delay);
+    function debounce(func, delay) {
         let timeout;
         return (...args) => {
             clearTimeout(timeout);
-            timeout = setTimeout(() => func(...args), delay);put
+            timeout = setTimeout(() => func(...args), delay);
         };
     }
 
-    // Filter countries based on search input       const searchTerm = countrySearch.value.toLowerCase();
-    countrySearch.addEventListener("input", () => {
-        const searchTerm = countrySearch.value.toLowerCase();
-        const filteredCountries = Object.keys(countries).filter((country) =>
-            country.toLowerCase().includes(searchTerm)
-        );
-        populateCountries(filteredCountries, countrySelect);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    });
-
-    // Setup search functionality
-    setupSearch(countrySearch, countrySelect, countries, populateCountries);
+    // Filter countries based on search input
+    countrySearch.addEventListener(
+        "input",
+        debounce(() => {
+            const searchTerm = countrySearch.value.toLowerCase();
+            const filteredCountries = Object.keys(countries).filter((country) =>
+                country.toLowerCase().includes(searchTerm)
+            );
+            populateCountries(filteredCountries, countrySelect);
+        }, 300)
+    );
 
     // Fetch supporter data and update the count
     fetchSupporterData(SUPPORTERS_REF, countries, (data) => updateSupportCount(data, supportCount));
