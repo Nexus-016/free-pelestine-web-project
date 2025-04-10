@@ -89,3 +89,30 @@ window.db.ref('test').on('value', (snapshot) => {
 // import { initializeApp } from 'firebase/app';
 // import { getDatabase, ref, onValue } from 'firebase/database';
 // ... Firebase setup code ...
+
+// Add this at the end of the file
+async function resetSupport() {
+    try {
+        // Clear localStorage
+        localStorage.removeItem('palestine_support_recorded');
+        
+        // Reset button state
+        const button = document.getElementById('support-btn');
+        button.disabled = false;
+        button.querySelector('.checkbox-tick').classList.remove('show');
+        
+        // Hide thank you and share sections
+        document.getElementById('thank-you').classList.add('hidden');
+        document.getElementById('share-section').classList.add('hidden');
+        
+        // Reset IP check in Firebase
+        const ipHash = await generateIPHash();
+        await window.db.ref(`ip_checks/${ipHash}`).remove();
+        
+        console.log('Support reset successful');
+        location.reload(); // Refresh the page
+    } catch (error) {
+        console.error('Error resetting support:', error);
+        alert('Error resetting support. Please try again.');
+    }
+}
