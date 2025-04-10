@@ -10,6 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const supportSideRadios = document.querySelectorAll("input[name='supportSide']");
 
     const SUPPORTERS_REF = ref(database, "supporters");
+    const HAS_VOTED_KEY = "hasVoted"; // LocalStorage key to track voting status
     let countries = {}; // Global variable to store country data
     let supporterData = {}; // Global variable to store supporter data
 
@@ -80,6 +81,16 @@ document.addEventListener("DOMContentLoaded", () => {
         supportCount.textContent = `${totalSupporters} people have supported so far.`;
     }
 
+    // Check if the user has already voted
+    function checkVotingStatus() {
+        const hasVoted = localStorage.getItem(HAS_VOTED_KEY);
+        if (hasVoted) {
+            supportButton.disabled = true;
+            supportButton.textContent = "You have already voted";
+            thankYouMessage.classList.remove("hidden");
+        }
+    }
+
     // Enable the button only if "Palestine" is selected
     supportSideRadios.forEach((radio) => {
         radio.addEventListener("change", () => {
@@ -100,6 +111,10 @@ document.addEventListener("DOMContentLoaded", () => {
             await update(ref(database, `supporters/${selectedCountry}`), { count: currentCount + 1 });
             supporterData[selectedCountry] = currentCount + 1;
             updateSupportCount();
+
+            // Mark the user as having voted
+            localStorage.setItem(HAS_VOTED_KEY, "true");
+
             thankYouMessage.classList.remove("hidden");
             supportButton.disabled = true;
             supportButton.textContent = "You have already voted";
@@ -125,4 +140,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Fetch supporter data on page load
     fetchSupporterData();
+
+    // Check voting status on page load
+    checkVotingStatus();
 });

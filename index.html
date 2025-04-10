@@ -46,22 +46,14 @@
         <div class="share">
             <p>Share to amplify. Your voice matters.</p>
         </div>
-        <div class="test-tools">
-            <button id="resetButton">Reset Voting Status for test</button>
-        </div>
     </div>
     <footer>
-        <p>Voices for Palestine | Powered by Humanity</p>
+        <p>
+            Voices for Palestine | Powered by Humanity | 
+            <a href="https://www.facebook.com/alamin.edits" target="_blank" style="color: #ffffff; text-decoration: none;">Al Amin</a>
+        </p>
     </footer>
     <script src="firebase-config.js" type="module"></script>
     <script src="script.js" type="module"></script>
-    <script>
-        // Temporary reset button for testing
-        document.getElementById("resetButton").addEventListener("click", () => {
-            localStorage.removeItem("hasVoted");
-            alert("Voting status has been reset. You can now vote again.");
-            location.reload(); // Reload the page to apply changes
-        });
-    </script>
 </body>
 </html>
