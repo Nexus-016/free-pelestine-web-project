@@ -10,7 +10,7 @@ export async function preloadCountryData() {
             countries = JSON.parse(cachedCountries);
         } else {
             console.log("Fetching country data...");
-            const response = await fetch("/country/countries.json"); // Ensure this path is correct
+            const response = await fetch("country/countries.json"); // Ensure this path is correct
             if (response.ok) {
                 countries = await response.json();
                 console.log("Fetched country data:", countries);

@@ -16,6 +16,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     const HAS_VOTED_KEY = "hasVoted"; // LocalStorage key to track voting status
     let supporterData = {}; // Global variable to store supporter data
 
+    // Fallback: Hardcoded list of countries
+    const fallbackCountries = ["Bangladesh", "Palestine", "United States", "India"];
+
     // Toggle navigation menu visibility on mobile
     menuToggle.addEventListener("click", () => {
         navMenu.classList.toggle("active");
@@ -125,7 +128,12 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // Preload country data and populate the dropdown
     await preloadCountryData();
-    populateCountries(Object.keys(countries), countrySelect);
+    if (Object.keys(countries).length > 0) {
+        populateCountries(Object.keys(countries), countrySelect);
+    } else {
+        console.warn("Using fallback country data.");
+        populateCountries(fallbackCountries, countrySelect);
+    }
 
     // Optimize search input with debounce
     countrySearch.addEventListener(
