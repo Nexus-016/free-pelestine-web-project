@@ -6,12 +6,5 @@
     { "source": "/news", "destination": "/news.html" },
     { "source": "/about", "destination": "/about.html" }
   ],
-  "version": 2,
-  "builds": [
-    { "src": "firebase-config.js", "use": "@vercel/static-build" },
-    { "src": "dashboard.js", "use": "@vercel/static-build" }
-  ],
-  "routes": [
-    { "src": "/api/(.*)", "dest": "server.js" }
-  ]
+  "version": 2
 }
