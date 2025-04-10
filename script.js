@@ -1,3 +1,6 @@
+import { database } from "./firebase-config.js";
+import { ref, get, set, update } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+
 document.addEventListener("DOMContentLoaded", () => {
     const supportButton = document.getElementById("supportButton");
     const thankYouMessage = document.getElementById("thankYouMessage");
@@ -5,35 +8,20 @@ document.addEventListener("DOMContentLoaded", () => {
     const countrySelect = document.getElementById("countrySelect");
     const countrySearch = document.getElementById("countrySearch");
     const supportSideRadios = document.querySelectorAll("input[name='supportSide']");
-    const menuToggle = document.querySelector(".menu-toggle");
-    const navMenu = document.querySelector(".nav-menu");
-    const navLinks = document.querySelectorAll(".nav-link");
 
-    const COUNTRIES_CACHE_KEY = "countriesCache"; // Key for caching countries in localStorage
+    const SUPPORTERS_REF = ref(database, "supporters");
     let countries = {}; // Global variable to store country data
     let supporterData = {}; // Global variable to store supporter data
-
-    // GitHub token and repository details
-    const GITHUB_TOKEN = "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"; // Replace with your GitHub token
-    const REPO = "Nexus-016/free-pelestine-web-project"; // Replace with your GitHub repo
-    const FILE_PATH = "supporterData.json"; // File to update in the repo
 
     // Preload and cache country data
     async function preloadCountryData() {
         try {
-            const cachedCountries = localStorage.getItem(COUNTRIES_CACHE_KEY);
-            if (cachedCountries) {
-                countries = JSON.parse(cachedCountries);
-                console.log("Loaded countries from cache:", countries);
+            const response = await fetch("/country/countries.json");
+            if (response.ok) {
+                countries = await response.json();
+                populateCountries(Object.keys(countries));
             } else {
-                const response = await fetch("/country/countries.json");
-                if (response.ok) {
-                    countries = await response.json();
-                    localStorage.setItem(COUNTRIES_CACHE_KEY, JSON.stringify(countries)); // Cache the data
-                    console.log("Fetched and cached country data:", countries);
-                } else {
-                    console.error("Failed to fetch country data:", response.status);
-                }
+                console.error("Failed to fetch country data:", response.status);
             }
         } catch (error) {
             console.error("Error preloading country data:", error);
@@ -58,41 +46,18 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // Search functionality for countries
-    countrySearch.addEventListener("input", () => {
-        const searchTerm = countrySearch.value.toLowerCase();
-        const filteredCountries = Object.keys(countries).filter((country) =>
-            country.toLowerCase().includes(searchTerm)
-        );
-        populateCountries(filteredCountries);
-    });
-
-    // Fetch and cache country data, then populate the dropdown
-    preloadCountryData().then(() => {
-        populateCountries(Object.keys(countries));
-    });
-
-    // Fetch supporter data from GitHub
+    // Fetch supporter data from Firebase
     async function fetchSupporterData() {
         try {
-            const response = await fetch(`https://api.github.com/repos/${REPO}/contents/${FILE_PATH}`, {
-                headers: { "Authorization": `token ${GITHUB_TOKEN}` }
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                const content = atob(data.content); // Decode base64 content
-                supporterData = JSON.parse(content);
+            const snapshot = await get(SUPPORTERS_REF);
+            if (snapshot.exists()) {
+                supporterData = snapshot.val();
                 updateSupportCount();
-                console.log("Fetched supporter data from GitHub:", supporterData);
-            } else if (response.status === 404) {
-                console.warn("Supporter data file not found on GitHub. Initializing empty data.");
-                supporterData = {};
             } else {
-                console.error("Failed to fetch supporter data from GitHub:", await response.json());
+                console.warn("No supporter data found.");
             }
         } catch (error) {
-            console.error("Error fetching supporter data from GitHub:", error);
+            console.error("Error fetching supporter data:", error);
         }
     }
 
@@ -113,96 +78,26 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    // Fetch supporter data from GitHub on page load
-    fetchSupporterData();
-
+    // Submit support for a country
     supportButton.addEventListener("click", async () => {
         const selectedCountry = countrySelect.value;
 
-        // Increment the support count for the selected country
-        supporterData[selectedCountry] = (supporterData[selectedCountry] || 0) + 1;
-
-        console.log(`Support recorded for: ${selectedCountry}`);
-        console.log("Updated supporter data:", supporterData);
-
-        // Mark the user as having voted
-        localStorage.setItem("hasVoted", "true");
-
-        supportButton.disabled = true;
-        supportButton.textContent = "You have already voted";
-        thankYouMessage.classList.remove("hidden");
-        updateSupportCount();
-
-        // Push updated data to GitHub
-        await pushToGitHub();
+        try {
+            const currentCount = supporterData[selectedCountry] || 0;
+            await update(ref(database, `supporters/${selectedCountry}`), { count: currentCount + 1 });
+            supporterData[selectedCountry] = currentCount + 1;
+            updateSupportCount();
+            thankYouMessage.classList.remove("hidden");
+            supportButton.disabled = true;
+            supportButton.textContent = "You have already voted";
+        } catch (error) {
+            console.error("Error updating supporter data:", error);
+        }
     });
 
-    // Push supporter data to GitHub
-    async function pushToGitHub() {
-        const content = JSON.stringify(supporterData, null, 2);
-        const encodedContent = btoa(content);
+    // Fetch and cache country data, then populate the dropdown
+    preloadCountryData();
 
-        try {
-            const response = await fetch(`https://api.github.com/repos/${REPO}/contents/${FILE_PATH}`, {
-                method: "PUT",
-                headers: {
-                    "Authorization": `token ${GITHUB_TOKEN}`,
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    message: "Update supporter data",
-                    content: encodedContent,
-                    sha: await getFileSHA()
-                })
-            });
-
-            if (response.ok) {
-                console.log("Supporter data pushed to GitHub.");
-            } else {
-                console.error("Failed to push to GitHub:", await response.json());
-            }
-        } catch (error) {
-            console.error("Error pushing to GitHub:", error);
-        }
-    }
-
-    // Get the SHA of the file in the GitHub repo
-    async function getFileSHA() {
-        try {
-            const response = await fetch(`https://api.github.com/repos/${REPO}/contents/${FILE_PATH}`, {
-                headers: { "Authorization": `token ${GITHUB_TOKEN}` }
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                return data.sha;
-            }
-        } catch (error) {
-            console.warn("File SHA not found. Assuming new file.");
-        }
-        return null; // File does not exist
-    }
-
-    // Ensure menuToggle and navMenu exist before adding event listeners
-    if (menuToggle && navMenu) {
-        // Toggle navigation menu on mobile
-        menuToggle.addEventListener("click", () => {
-            navMenu.classList.toggle("active");
-        });
-
-        // Close navigation menu when a link is clicked
-        navLinks.forEach((link) => {
-            link.addEventListener("click", () => {
-                navMenu.classList.remove("active");
-            });
-        });
-    }
-
-    // Highlight the active tab based on the current URL
-    const currentPath = window.location.pathname.split("/").pop();
-    navLinks.forEach((link) => {
-        if (link.getAttribute("href") === currentPath) {
-            link.classList.add("active");
-        }
-    });
+    // Fetch supporter data on page load
+    fetchSupporterData();
 });

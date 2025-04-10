@@ -9,10 +9,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     let countries = {};
     let supporterData = {};
 
-    // GitHub token and repository details
-    const GITHUB_TOKEN = "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"; // Replace with your GitHub token
-    const REPO = "Nexus-016/free-pelestine-web-project"; // Replace with your GitHub repo
-    const FILE_PATH = "supporterData.json"; // File to fetch from the repo
+    const API_URL = "http://localhost:5000/api/supporters"; // Backend API URL
 
     // Fetch country data from the new folder
     async function fetchCountryData() {
@@ -29,28 +26,23 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     }
 
-    // Fetch supporter data from GitHub
+    // Fetch supporter data from MongoDB
     async function fetchSupporterData() {
         try {
-            const response = await fetch(`https://api.github.com/repos/${REPO}/contents/${FILE_PATH}`, {
-                headers: { "Authorization": `token ${GITHUB_TOKEN}` }
-            });
-
+            const response = await fetch(API_URL);
             if (response.ok) {
                 const data = await response.json();
-                const content = atob(data.content); // Decode base64 content
-                supporterData = JSON.parse(content);
-                console.log("Fetched supporter data from GitHub:", supporterData);
-                updateDashboard();
-            } else if (response.status === 404) {
-                console.warn("Supporter data file not found on GitHub. Initializing empty data.");
-                supporterData = {};
+                supporterData = data.reduce((acc, item) => {
+                    acc[item.country] = item.count;
+                    return acc;
+                }, {});
+                console.log("Fetched supporter data from MongoDB:", supporterData);
                 updateDashboard();
             } else {
-                console.error("Failed to fetch supporter data from GitHub:", await response.json());
+                console.error("Failed to fetch supporter data:", response.status);
             }
         } catch (error) {
-            console.error("Error fetching supporter data from GitHub:", error);
+            console.error("Error fetching supporter data:", error);
         }
     }
 
