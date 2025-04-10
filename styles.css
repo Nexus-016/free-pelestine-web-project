@@ -173,3 +173,67 @@ a {
 a:hover {
     text-decoration: underline;
 }
+
+/* News Page Styles */
+.news-card {
+    background: var(--dark-secondary);
+    padding: 1.5rem;
+    margin: 1rem 0;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.news-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+
+.news-card h3 {
+    color: var(--palestine-green);
+    margin-top: 0;
+}
+
+.news-card a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.news-card p {
+    color: var(--dark-text);
+    line-height: 1.5;
+}
+
+.news-card small {
+    color: var(--palestine-red);
+}
+
+.news-card hr {
+    border: none;
+    border-top: 1px solid var(--dark-surface);
+    margin: 1rem 0;
+}
+
+#loading {
+    text-align: center;
+    padding: 2rem;
+    color: var(--palestine-green);
+}
+
+#error {
+    background: rgba(228, 49, 43, 0.2);
+    color: var(--palestine-red);
+    padding: 1rem;
+    border-radius: 8px;
+    margin: 1rem 0;
+    text-align: center;
+}
+
+.update-status {
+    text-align: center;
+    color: var(--palestine-green);
+    padding: 0.5rem;
+    margin: 1rem 0;
+    font-size: 0.9rem;
+    background: var(--dark-secondary);
+    border-radius: 4px;
+}

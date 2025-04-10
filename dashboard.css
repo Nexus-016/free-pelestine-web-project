@@ -1,8 +1,6 @@
 :root {
     --palestine-red: #E4312b;
     --palestine-green: #149954;
-    --palestine-black: #000000;
-    --palestine-white: #FFFFFF;
     --dark-bg: #121212;
     --dark-surface: #1E1E1E;
     --dark-text: #E0E0E0;
@@ -59,6 +57,7 @@ body {
     margin: 0 auto;
     padding: 2rem;
     background: var(--dark-surface);
+    color: var(--dark-text);
     border-radius: 10px;
     box-shadow: 0 2px 10px rgba(0,0,0,0.3);
 }
@@ -96,13 +95,40 @@ body {
 .country {
     fill: var(--dark-secondary);
     stroke: var(--dark-bg);
-    stroke-width: 0.5;
-    transition: fill 0.3s ease;
+    transition: all 0.3s ease;
+}
+
+/* Support level styles */
+.low-support {
+    fill: rgba(228, 49, 43, 0.3);
+    filter: brightness(1.2);
+}
+
+.medium-support {
+    fill: rgba(228, 49, 43, 0.6);
+    filter: brightness(1.4);
+    animation: pulse 2s infinite;
+}
+
+.high-support {
+    fill: rgba(228, 49, 43, 0.9);
+    filter: brightness(1.6);
+    animation: glow 2s infinite;
+}
+
+/* Hover effects */
+.country:hover {
+    opacity: 0.8;
     cursor: pointer;
 }
 
-.country:hover {
-    opacity: 0.8;
+/* Animations */
+@keyframes pulse {
+    50% { filter: brightness(1.6); }
+}
+
+@keyframes glow {
+    50% { filter: brightness(1.8) drop-shadow(0 0 10px var(--palestine-red)); }
 }
 
 .country-list {

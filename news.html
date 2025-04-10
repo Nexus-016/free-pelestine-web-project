@@ -5,75 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Palestine News - Live Updates</title>
     <link rel="stylesheet" href="styles.css">
-    <style>
-        .news-card {
-            background: var(--dark-secondary);
-            padding: 1.5rem;
-            margin: 1rem 0;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-        }
-
-        .news-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-        }
-
-        .news-card h3 {
-            color: var(--palestine-green);
-            margin-top: 0;
-        }
-
-        .news-card a {
-            color: inherit;
-            text-decoration: none;
-        }
-
-        .news-card p {
-            color: var(--dark-text);
-            line-height: 1.5;
-        }
-
-        .news-card small {
-            color: var(--palestine-red);
-        }
-
-        .news-card hr {
-            border: none;
-            border-top: 1px solid var(--dark-surface);
-            margin: 1rem 0;
-        }
-
-        #loading {
-            text-align: center;
-            padding: 2rem;
-            color: var(--palestine-green);
-        }
-
-        #error {
-            background: rgba(228, 49, 43, 0.2);
-            color: var(--palestine-red);
-            padding: 1rem;
-            border-radius: 8px;
-            margin: 1rem 0;
-            text-align: center;
-        }
-
-        .refresh-btn {
-            background: var(--palestine-green);
-            color: var(--dark-text);
-            border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 4px;
-            cursor: pointer;
-            margin: 1rem 0;
-            transition: all 0.3s ease;
-        }
-
-        .refresh-btn:hover {
-            background: var(--palestine-red);
-        }
-    </style>
 </head>
 <body>
     <header class="header">
@@ -87,9 +18,7 @@
 
     <div class="container">
         <h1>Live Updates: Palestine News</h1>
-        <div id="api-status"></div>
-        <button onclick="loadNews()" class="refresh-btn">🔄 Refresh News</button>
-        <small id="next-update"></small>
+        <div id="update-status" class="update-status"></div>
         <div id="news-container">
             <div id="loading">Loading latest news...</div>
         </div>
@@ -101,9 +30,9 @@
         const newsCache = new NewsCache();
         let updateTimer;
 
-        async function loadNews() {
+        async function loadNews(isAutoRefresh = false) {
             const container = document.getElementById('news-container');
-            const statusDiv = document.getElementById('api-status');
+            const statusDiv = document.getElementById('update-status');
             
             try {
                 const articles = await newsCache.loadNews(apiKey);
@@ -123,11 +52,6 @@
                         container.appendChild(div);
                     });
 
-                    // Update status
-                    const remaining = newsCache.getApiCallsRemaining();
-                    statusDiv.innerHTML = `API Calls Remaining Today: ${remaining}`;
-                    
-                    // Update next refresh timer
                     updateNextRefreshTimer();
                 }
             } catch (error) {
@@ -139,15 +63,14 @@
             const cached = newsCache.getCachedNews();
             if (cached) {
                 const nextUpdate = new Date(cached.timestamp + newsCache.CACHE_DURATION);
-                const updateDiv = document.getElementById('next-update');
+                const updateDiv = document.getElementById('update-status');
                 
                 clearInterval(updateTimer);
                 updateTimer = setInterval(() => {
                     const now = new Date();
                     const diff = nextUpdate - now;
                     if (diff <= 0) {
-                        updateDiv.textContent = 'Cache expired - Click refresh to update';
-                        clearInterval(updateTimer);
+                        loadNews(true); // Auto refresh when time is up
                     } else {
                         const minutes = Math.floor(diff / 60000);
                         const seconds = Math.floor((diff % 60000) / 1000);
@@ -157,8 +80,8 @@
             }
         }
 
-        // Load news when page loads
-        document.addEventListener('DOMContentLoaded', loadNews);
+        // Initial load
+        document.addEventListener('DOMContentLoaded', () => loadNews());
     </script>
 </body>
 </html>
