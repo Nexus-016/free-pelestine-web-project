@@ -156,7 +156,6 @@ body {
     fill: rgba(228, 49, 43, 0.4);
     filter: drop-shadow(0 0 5px rgba(228, 49, 43, 0.6))
             drop-shadow(0 0 15px rgba(228, 49, 43, 0.4)) !important;
-    animation: glowLow 3s infinite, pulseLow 2s infinite;
 }
 
 .medium-support {
@@ -164,7 +163,6 @@ body {
     filter: drop-shadow(0 0 8px rgba(228, 49, 43, 0.8))
             drop-shadow(0 0 20px rgba(228, 49, 43, 0.6))
             drop-shadow(0 0 30px rgba(228, 49, 43, 0.4)) !important;
-    animation: glowMedium 3s infinite, pulseMedium 2s infinite;
 }
 
 .high-support {
@@ -172,61 +170,26 @@ body {
     filter: drop-shadow(0 0 10px rgba(228, 49, 43, 1))
             drop-shadow(0 0 25px rgba(228, 49, 43, 0.8))
             drop-shadow(0 0 40px rgba(228, 49, 43, 0.6)) !important;
-    animation: glowHigh 3s infinite, pulseHigh 2s infinite;
 }
 
-/* Enhanced glow animations */
-@keyframes glowLow {
-    0%, 100% { 
-        filter: drop-shadow(0 0 5px rgba(228, 49, 43, 0.6))
-                drop-shadow(0 0 15px rgba(228, 49, 43, 0.4));
-    }
-    50% { 
-        filter: drop-shadow(0 0 8px rgba(228, 49, 43, 0.7))
-                drop-shadow(0 0 20px rgba(228, 49, 43, 0.5));
-    }
+/* Enhanced map path styles */
+.leaflet-interactive {
+    transition: all 0.5s ease;
 }
 
-@keyframes glowMedium {
-    0%, 100% { 
-        filter: drop-shadow(0 0 8px rgba(228, 49, 43, 0.8))
-                drop-shadow(0 0 20px rgba(228, 49, 43, 0.6))
-                drop-shadow(0 0 30px rgba(228, 49, 43, 0.4));
-    }
-    50% { 
-        filter: drop-shadow(0 0 12px rgba(228, 49, 43, 1))
-                drop-shadow(0 0 25px rgba(228, 49, 43, 0.8))
-                drop-shadow(0 0 35px rgba(228, 49, 43, 0.6));
-    }
+.leaflet-interactive.high-support {
+    filter: drop-shadow(0 0 15px rgba(228, 49, 43, 1))
+            drop-shadow(0 0 30px rgba(228, 49, 43, 0.8))
+            drop-shadow(0 0 45px rgba(228, 49, 43, 0.6));
 }
 
-@keyframes glowHigh {
-    0%, 100% { 
-        filter: drop-shadow(0 0 10px rgba(228, 49, 43, 1))
-                drop-shadow(0 0 25px rgba(228, 49, 43, 0.8))
-                drop-shadow(0 0 40px rgba(228, 49, 43, 0.6));
-    }
-    50% { 
-        filter: drop-shadow(0 0 15px rgba(228, 49, 43, 1))
-                drop-shadow(0 0 35px rgba(228, 49, 43, 0.9))
-                drop-shadow(0 0 50px rgba(228, 49, 43, 0.7));
-    }
+.leaflet-interactive.medium-support {
+    filter: drop-shadow(0 0 10px rgba(228, 49, 43, 0.8))
+            drop-shadow(0 0 20px rgba(228, 49, 43, 0.6));
 }
 
-/* Enhanced dynamic glow animations */
-@keyframes pulseHigh {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.8; }
-}
-
-@keyframes pulseMedium {
-    0%, 100% { opacity: 0.8; }
-    50% { opacity: 0.6; }
-}
-
-@keyframes pulseLow {
-    0%, 100% { opacity: 0.6; }
-    50% { opacity: 0.4; }
+.leaflet-interactive.low-support {
+    filter: drop-shadow(0 0 5px rgba(228, 49, 43, 0.6));
 }
 
 .country-list {
@@ -251,58 +214,21 @@ body {
     padding: 0.8rem;
     margin: 0.5rem 0;
     border-radius: 4px;
+    border-left: 4px solid var(--palestine-red);
+    background: var(--dark-secondary);
     transition: all 0.3s ease;
 }
 
 .country-list li.high-support {
     background: rgba(228, 49, 43, 0.2);
-    box-shadow: 0 0 10px rgba(228, 49, 43, 0.6),
-                0 0 20px rgba(228, 49, 43, 0.4);
-    animation: listGlowHigh 3s infinite;
 }
 
 .country-list li.medium-support {
     background: rgba(228, 49, 43, 0.1);
-    box-shadow: 0 0 8px rgba(228, 49, 43, 0.4),
-                0 0 16px rgba(228, 49, 43, 0.2);
-    animation: listGlowMedium 3s infinite;
 }
 
 .country-list li.low-support {
     background: rgba(228, 49, 43, 0.05);
-    box-shadow: 0 0 5px rgba(228, 49, 43, 0.3);
-    animation: listGlowLow 3s infinite;
-}
-
-@keyframes listGlowHigh {
-    0%, 100% { 
-        box-shadow: 0 0 10px rgba(228, 49, 43, 0.6),
-                    0 0 20px rgba(228, 49, 43, 0.4);
-    }
-    50% { 
-        box-shadow: 0 0 15px rgba(228, 49, 43, 0.8),
-                    0 0 30px rgba(228, 49, 43, 0.6);
-    }
-}
-
-@keyframes listGlowMedium {
-    0%, 100% { 
-        box-shadow: 0 0 8px rgba(228, 49, 43, 0.4),
-                    0 0 16px rgba(228, 49, 43, 0.2);
-    }
-    50% { 
-        box-shadow: 0 0 12px rgba(228, 49, 43, 0.6),
-                    0 0 24px rgba(228, 49, 43, 0.4);
-    }
-}
-
-@keyframes listGlowLow {
-    0%, 100% { 
-        box-shadow: 0 0 5px rgba(228, 49, 43, 0.3);
-    }
-    50% { 
-        box-shadow: 0 0 8px rgba(228, 49, 43, 0.4);
-    }
 }
 
 .country-list li:last-child {

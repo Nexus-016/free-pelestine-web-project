@@ -93,17 +93,30 @@ function updateMapColors(snapshot) {
                 if (feature?.properties?.layer) {
                     const layer = feature.properties.layer;
                     const intensity = Math.min(1, count / maxSupport);
+                    const supportClass = getSupportClass(count);
                     
+                    // Apply styles and glow effect
+                    const path = layer.getElement();
+                    if (path) {
+                        // Remove old classes
+                        path.classList.remove('high-support', 'medium-support', 'low-support');
+                        // Add new class for glow effect
+                        if (supportClass) {
+                            path.classList.add(supportClass);
+                        }
+                    }
+
+                    // Update fill color
                     layer.setStyle({
                         fillColor: `rgba(228, 49, 43, ${intensity})`,
-                        fillOpacity: 0.7 + (intensity * 0.3)
+                        fillOpacity: 0.7 + (intensity * 0.3),
+                        className: supportClass
                     });
 
-                    // Update tooltip content
-                    layer.unbindTooltip();
+                    // Update tooltip
                     layer.bindTooltip(
                         `${data.name}: ${count.toLocaleString()}`,
-                        { className: getSupportClass(count) + '-tooltip' }
+                        { className: 'map-tooltip' }
                     );
                 }
             });
