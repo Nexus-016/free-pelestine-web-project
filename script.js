@@ -1,5 +1,6 @@
 import { database } from "./firebase-config.js";
 import { ref, get, update } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+import { preloadCountryData, populateCountries, countries } from "./country.js";
 
 document.addEventListener("DOMContentLoaded", () => {
     const supportButton = document.getElementById("supportButton");
@@ -13,7 +14,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const SUPPORTERS_REF = ref(database, "supporters");
     const HAS_VOTED_KEY = "hasVoted"; // LocalStorage key to track voting status
-    let countries = {}; // Global variable to store country data
     let supporterData = {}; // Global variable to store supporter data
 
     // Toggle navigation menu visibility on mobile
@@ -35,46 +35,6 @@ document.addEventListener("DOMContentLoaded", () => {
             clearTimeout(timeout);
             timeout = setTimeout(() => func(...args), delay);
         };
-    }
-
-    // Preload and cache country data
-    async function preloadCountryData() {
-        try {
-            console.log("Fetching country data...");
-            const response = await fetch("country/countries.json"); // Ensure this path is correct
-            if (response.ok) {
-                countries = await response.json();
-                console.log("Fetched country data:", countries);
-                populateCountries(Object.keys(countries)); // Populate the dropdown with country names
-            } else {
-                console.error("Failed to fetch country data:", response.status);
-                countrySelect.innerHTML = "<option value=''>Failed to load countries</option>";
-            }
-        } catch (error) {
-            console.error("Error preloading country data:", error);
-            console.log("Using fallback country data...");
-            const fallbackCountries = ["Bangladesh", "Palestine", "United States", "India"];
-            populateCountries(fallbackCountries);
-        }
-    }
-
-    // Populate country dropdown
-    function populateCountries(filteredCountries = []) {
-        countrySelect.innerHTML = ""; // Clear existing options
-        if (filteredCountries.length === 0) {
-            const option = document.createElement("option");
-            option.value = "";
-            option.textContent = "No countries available";
-            countrySelect.appendChild(option);
-        } else {
-            filteredCountries.forEach((country) => {
-                const option = document.createElement("option");
-                option.value = country;
-                option.textContent = country;
-                countrySelect.appendChild(option);
-            });
-        }
-        console.log("Populated countries:", filteredCountries);
     }
 
     // Fetch supporter data from Firebase
@@ -99,6 +59,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Update the supporter count display
     function updateSupportCount() {
         let totalSupporters = 0;
+
         // Ensure supporterData contains only numeric values
         Object.values(supporterData).forEach((count) => {
             if (typeof count === "number") {
@@ -107,6 +68,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 console.warn("Invalid data detected in supporterData:", count);
             }
         });
+
         supportCount.textContent = `${totalSupporters} people have supported so far.`;
     }
 
@@ -169,12 +131,12 @@ document.addEventListener("DOMContentLoaded", () => {
             const filteredCountries = Object.keys(countries).filter((country) =>
                 country.toLowerCase().includes(searchTerm)
             );
-            populateCountries(filteredCountries);
+            populateCountries(filteredCountries, countrySelect);
         }, 300)
     );
 
     // Fetch and cache country data, then populate the dropdown
-    preloadCountryData();
+    preloadCountryData(countrySelect, populateCountries);
 
     // Fetch supporter data on page load
     fetchSupporterData();
