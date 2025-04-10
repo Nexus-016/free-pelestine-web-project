@@ -1,39 +1,62 @@
 // Add new function for getting location
 async function getLocationData() {
     try {
-        // Try multiple location APIs
-        const apis = [
-            'https://api.ipdata.co?api-key=c6d4d5f3e35f9ae4f8e04f4de3559d49a76c6cba0219f7dd44d81c90',
-            'https://ipwho.is/',
-            'https://api.ipify.org?format=json'
-        ];
-
-        for (const api of apis) {
-            try {
-                const response = await fetch(api);
-                const data = await response.json();
-                return {
-                    country: data.country_code || data.country || 'UNKNOWN',
-                    city: data.city || 'UNKNOWN',
-                    latitude: data.latitude || 0,
-                    longitude: data.longitude || 0
-                };
-            } catch (e) {
-                console.log('Failed with API:', api);
-                continue;
+        // First try: ipapi.co with JSONP to avoid CORS
+        const response = await fetch('https://ipapi.co/json/', {
+            headers: {
+                'Accept': 'application/json',
+                'User-Agent': 'Mozilla/5.0'
             }
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            console.log('Location data from ipapi:', data);
+            return {
+                country: data.country_code || data.country || 'UNKNOWN',
+                city: data.city || 'UNKNOWN',
+                latitude: data.latitude || 0,
+                longitude: data.longitude || 0
+            };
         }
 
-        // Fallback if all APIs fail
-        return {
-            country: 'UNKNOWN',
-            city: 'UNKNOWN',
-            latitude: 0,
-            longitude: 0
-        };
+        // Backup API: ip-api.com
+        const backupResponse = await fetch('http://ip-api.com/json/?fields=status,message,country,countryCode,city,lat,lon');
+        if (backupResponse.ok) {
+            const data = await backupResponse.json();
+            console.log('Location data from ip-api:', data);
+            return {
+                country: data.countryCode || data.country || 'UNKNOWN',
+                city: data.city || 'UNKNOWN',
+                latitude: data.lat || 0,
+                longitude: data.lon || 0
+            };
+        }
+
+        throw new Error('Failed to fetch location data');
     } catch (error) {
         console.error('Location fetch error:', error);
-        return null;
+        
+        // Last resort: Use a serverless function or proxy
+        try {
+            const fallbackResponse = await fetch('https://api.db-ip.com/v2/free/self');
+            const data = await fallbackResponse.json();
+            console.log('Location data from db-ip:', data);
+            return {
+                country: data.countryCode || 'UNKNOWN',
+                city: data.city || 'UNKNOWN',
+                latitude: 0,
+                longitude: 0
+            };
+        } catch (e) {
+            console.error('All location APIs failed:', e);
+            return {
+                country: 'UNKNOWN',
+                city: 'UNKNOWN',
+                latitude: 0,
+                longitude: 0
+            };
+        }
     }
 }
 
@@ -47,8 +70,23 @@ async function handleSupport(button) {
         checkbox.classList.add('show');
         button.disabled = true;
 
-        // Get location data
-        const locationData = await getLocationData();
+        // Try to get location data with timeout
+        const locationPromise = getLocationData();
+        const timeoutPromise = new Promise((_, reject) => 
+            setTimeout(() => reject(new Error('Location timeout')), 5000)
+        );
+
+        const locationData = await Promise.race([locationPromise, timeoutPromise])
+            .catch(error => {
+                console.warn('Location fetch timed out:', error);
+                return {
+                    country: 'UNKNOWN',
+                    city: 'UNKNOWN',
+                    latitude: 0,
+                    longitude: 0
+                };
+            });
+
         console.log('Location data:', locationData);
 
         // Prepare updates for Firebase
