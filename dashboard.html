@@ -3,50 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Voices for Palestine</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
+    <title>Support Dashboard - Palestine</title>
+    <link rel="stylesheet" href="dashboard.css">
+    <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+    <script src="https://cdn.jsdelivr.net/npm/topojson@3"></script>
 </head>
 <body>
-    <!-- Standardized Header -->
-    <header>
-        <div class="header-container">
-            <h1 class="site-title">Voices for Palestine</h1>
-            <nav class="nav-menu">
-                <a href="index.html" class="nav-link">Home</a>
-                <a href="dashboard.html" class="nav-link active">Dashboard</a>
-                <a href="news.html" class="nav-link">News</a>
-                <a href="about.html" class="nav-link">About</a>
-            </nav>
-            <button class="menu-toggle" aria-label="Toggle navigation menu">&#9776;</button>
+    <div class="dashboard-container">
+        <h1>Global Support Dashboard</h1>
+        <div class="stats">
+            <div class="total-supports">
+                <h2>Total Supports</h2>
+                <div id="total-counter">0</div>
+            </div>
         </div>
-    </header>
-    <div class="container">
-        <p class="dashboard-intro">
-            Welcome to the global supporter dashboard. The brighter the country, the more supporters it has.
-        </p>
-        <div id="map" style="height: 500px; border-radius: 8px; margin-bottom: 20px;"></div>
-        <div id="info">
-            <h2>Supporter Information</h2>
-            <ul id="supporterList">
-                <!-- Supporter data will be dynamically populated -->
-            </ul>
+        <div id="world-map"></div>
+        <div class="country-list">
+            <h3>Top Supporting Countries</h3>
+            <ul id="top-countries"></ul>
         </div>
     </div>
-    <footer>
-        <p>
-            Voices for Palestine | Powered by Humanity | 
-            <a href="https://www.facebook.com/alamin.edits" target="_blank" style="color: #ffffff; text-decoration: none;">Al Amin</a>
-        </p>
-    </footer>
-    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
-    <script src="dashboard.js" type="module"></script>
-    <script>
-        // Disable back button functionality
-        history.pushState(null, null, location.href);
-        window.onpopstate = function () {
-            history.go(1);
-        };
-    </script>
+    <script type="module" src="dashboard.js"></script>
 </body>
 </html>

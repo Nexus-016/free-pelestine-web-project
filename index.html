@@ -3,52 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Support Palestine</title>
+    <title>Stand with Palestine</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <header>
-        <nav>
-            <div class="logo">Peace Initiative</div>
-            <ul>
-                <li><a href="#" class="active">Home</a></li>
-                <li><a href="#">About</a></li>
-                <li><a href="#">Contact</a></li>
-            </ul>
-        </nav>
-    </header>
+    <div class="container">
+        <h1>Are you human? Prove it by standing with Palestine.</h1>
+        <p class="subtext">Join thousands worldwide showing support. One click. One voice.</p>
+        
+        <div class="captcha-box">
+            <button id="support-btn" class="support-button">
+                <div class="checkbox">
+                    <div class="checkbox-tick"></div>
+                </div>
+                <span>I Support Palestine</span>
+            </button>
+        </div>
 
-    <main>
-        <section class="hero">
-            <h1>Stand for Humanity</h1>
-            <p>Join thousands of people supporting peace and humanitarian aid.</p>
-            <button id="supportBtn" class="btn-support">Support Palestine</button>
-        </section>
+        <div id="thank-you" class="hidden">
+            <p>Thank you. Your support has been recorded.</p>
+            <p class="counter"><span id="supporter-count">0</span> people have supported so far.</p>
+        </div>
 
-        <section id="newUserContent" class="hidden">
-            <h2>Thank You for Your Support</h2>
-            <p>As a new supporter, you now have access to additional resources and ways to help.</p>
-            <div class="resources">
-                <div class="resource-card">
-                    <h3>Humanitarian Aid</h3>
-                    <p>Learn about organizations providing direct assistance.</p>
-                </div>
-                <div class="resource-card">
-                    <h3>Educational Resources</h3>
-                    <p>Access materials about the history and current situation.</p>
-                </div>
-                <div class="resource-card">
-                    <h3>Community Actions</h3>
-                    <p>Find local and global initiatives you can join.</p>
-                </div>
+        <div id="share-section" class="hidden">
+            <p>Share to amplify. Your voice matters.</p>
+            <div class="share-buttons">
+                <button onclick="share('twitter')">Twitter</button>
+                <button onclick="share('facebook')">Facebook</button>
             </div>
-        </section>
-    </main>
-
-    <footer>
-        <p>&copy; 2023 Peace Initiative | This is a demonstration site</p>
-    </footer>
-
-    <script src="script.js"></script>
+            <p><a href="dashboard.html">View Global Support Dashboard</a></p>
+        </div>
+    </div>
+    
+    <!-- Add Firebase SDK before your scripts -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.6.0/firebase-app.js';
+        import { getAnalytics } from 'https://www.gstatic.com/firebasejs/10.6.0/firebase-analytics.js';
+        import { getDatabase } from 'https://www.gstatic.com/firebasejs/10.6.0/firebase-database.js';
+    </script>
+    <script type="module" src="script.js"></script>
 </body>
 </html>
