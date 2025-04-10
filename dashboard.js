@@ -35,10 +35,10 @@ async function initDashboard() {
         .attr('id', d => `country-${d.id}`);
 
     // Listen for support updates
-    window.db.ref('supports').on('value', snapshot => {
-        const supports = snapshot.val() || {};
-        updateMapColors(supports);
-        updateTopCountries(supports);
+    window.db.ref('countries').on('value', snapshot => {
+        const countries = snapshot.val() || {};
+        updateMapColors(countries);
+        updateTopCountries(countries);
     });
 
     // Listen for total supports
@@ -48,12 +48,12 @@ async function initDashboard() {
     });
 }
 
-function updateMapColors(supports) {
-    const maxSupport = Math.max(...Object.values(supports));
+function updateMapColors(countries) {
+    const maxSupport = Math.max(...Object.values(countries).map(c => c.count || 0));
     
-    Object.entries(supports).forEach(([countryCode, count]) => {
-        const intensity = count / maxSupport;
-        const element = document.querySelector(`#country-${countryCode}`);
+    Object.entries(countries).forEach(([code, data]) => {
+        const intensity = (data.count || 0) / maxSupport;
+        const element = document.querySelector(`#country-${code}`);
         if (element) {
             element.style.fill = `rgba(20, 153, 84, ${intensity})`;
             if (intensity > 0.3) {
@@ -63,14 +63,14 @@ function updateMapColors(supports) {
     });
 }
 
-function updateTopCountries(supports) {
-    const sortedCountries = Object.entries(supports)
-        .sort(([,a], [,b]) => b - a)
+function updateTopCountries(countries) {
+    const sortedCountries = Object.entries(countries)
+        .sort(([,a], [,b]) => (b.count || 0) - (a.count || 0))
         .slice(0, 10);
 
     const list = document.getElementById('top-countries');
     list.innerHTML = sortedCountries
-        .map(([code, count]) => `<li>${code}: ${count.toLocaleString()} supports</li>`)
+        .map(([_, data]) => `<li>${data.name}: ${data.count.toLocaleString()} supports</li>`)
         .join('');
 }
 

@@ -1,62 +1,29 @@
-// Add new function for getting location
+// Add country name mapping
+const countryNames = {
+    'BD': 'Bangladesh',
+    'IN': 'India',
+    'PK': 'Pakistan',
+    'US': 'United States',
+    // Add more as needed...
+};
+
 async function getLocationData() {
     try {
-        // First try: ipapi.co with JSONP to avoid CORS
-        const response = await fetch('https://ipapi.co/json/', {
-            headers: {
-                'Accept': 'application/json',
-                'User-Agent': 'Mozilla/5.0'
-            }
-        });
+        // Try db-ip API directly since it works
+        const response = await fetch('https://api.db-ip.com/v2/free/self');
+        const data = await response.json();
+        console.log('Location data:', data);
         
-        if (response.ok) {
-            const data = await response.json();
-            console.log('Location data from ipapi:', data);
-            return {
-                country: data.country_code || data.country || 'UNKNOWN',
-                city: data.city || 'UNKNOWN',
-                latitude: data.latitude || 0,
-                longitude: data.longitude || 0
-            };
-        }
-
-        // Backup API: ip-api.com
-        const backupResponse = await fetch('http://ip-api.com/json/?fields=status,message,country,countryCode,city,lat,lon');
-        if (backupResponse.ok) {
-            const data = await backupResponse.json();
-            console.log('Location data from ip-api:', data);
-            return {
-                country: data.countryCode || data.country || 'UNKNOWN',
-                city: data.city || 'UNKNOWN',
-                latitude: data.lat || 0,
-                longitude: data.lon || 0
-            };
-        }
-
-        throw new Error('Failed to fetch location data');
+        return {
+            country: data.countryCode || 'UNKNOWN',
+            countryName: data.countryName || 'Unknown Country'
+        };
     } catch (error) {
         console.error('Location fetch error:', error);
-        
-        // Last resort: Use a serverless function or proxy
-        try {
-            const fallbackResponse = await fetch('https://api.db-ip.com/v2/free/self');
-            const data = await fallbackResponse.json();
-            console.log('Location data from db-ip:', data);
-            return {
-                country: data.countryCode || 'UNKNOWN',
-                city: data.city || 'UNKNOWN',
-                latitude: 0,
-                longitude: 0
-            };
-        } catch (e) {
-            console.error('All location APIs failed:', e);
-            return {
-                country: 'UNKNOWN',
-                city: 'UNKNOWN',
-                latitude: 0,
-                longitude: 0
-            };
-        }
+        return {
+            country: 'UNKNOWN',
+            countryName: 'Unknown Country'
+        };
     }
 }
 
@@ -66,41 +33,20 @@ async function handleSupport(button) {
     const checkbox = button.querySelector('.checkbox-tick');
     
     try {
-        // Show checkbox immediately for feedback
         checkbox.classList.add('show');
         button.disabled = true;
 
-        // Try to get location data with timeout
-        const locationPromise = getLocationData();
-        const timeoutPromise = new Promise((_, reject) => 
-            setTimeout(() => reject(new Error('Location timeout')), 5000)
-        );
-
-        const locationData = await Promise.race([locationPromise, timeoutPromise])
-            .catch(error => {
-                console.warn('Location fetch timed out:', error);
-                return {
-                    country: 'UNKNOWN',
-                    city: 'UNKNOWN',
-                    latitude: 0,
-                    longitude: 0
-                };
-            });
-
+        const locationData = await getLocationData();
         console.log('Location data:', locationData);
 
-        // Prepare updates for Firebase
+        // Simplified updates for Firebase
         const updates = {};
         updates['totalSupports'] = firebase.database.ServerValue.increment(1);
         
-        if (locationData && locationData.country !== 'UNKNOWN') {
-            updates[`supports/${locationData.country}`] = firebase.database.ServerValue.increment(1);
-            updates[`supporters/${Date.now()}`] = {
-                country: locationData.country,
-                city: locationData.city,
-                timestamp: firebase.database.ServerValue.TIMESTAMP,
-                latitude: locationData.latitude,
-                longitude: locationData.longitude
+        if (locationData.country !== 'UNKNOWN') {
+            updates[`countries/${locationData.country}`] = {
+                name: locationData.countryName,
+                count: firebase.database.ServerValue.increment(1)
             };
         }
 
