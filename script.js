@@ -8,11 +8,25 @@ document.addEventListener("DOMContentLoaded", () => {
     const countrySelect = document.getElementById("countrySelect");
     const countrySearch = document.getElementById("countrySearch");
     const supportSideRadios = document.querySelectorAll("input[name='supportSide']");
+    const menuToggle = document.querySelector(".menu-toggle");
+    const navMenu = document.querySelector(".nav-menu");
 
     const SUPPORTERS_REF = ref(database, "supporters");
     const HAS_VOTED_KEY = "hasVoted"; // LocalStorage key to track voting status
     let countries = {}; // Global variable to store country data
     let supporterData = {}; // Global variable to store supporter data
+
+    // Toggle navigation menu visibility on mobile
+    menuToggle.addEventListener("click", () => {
+        navMenu.classList.toggle("active");
+    });
+
+    // Close the menu when a link is clicked
+    navMenu.addEventListener("click", (event) => {
+        if (event.target.classList.contains("nav-link")) {
+            navMenu.classList.remove("active");
+        }
+    });
 
     // Debounce function to optimize search input
     function debounce(func, delay) {
