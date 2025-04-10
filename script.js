@@ -13,6 +13,15 @@ document.addEventListener("DOMContentLoaded", () => {
     let countries = {}; // Global variable to store country data
     let supporterData = {}; // Global variable to store supporter data
 
+    // Debounce function to optimize search input
+    function debounce(func, delay) {
+        let timeout;
+        return (...args) => {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func(...args), delay);
+        };
+    }
+
     // Preload and cache country data
     async function preloadCountryData() {
         try {
@@ -94,6 +103,18 @@ document.addEventListener("DOMContentLoaded", () => {
             console.error("Error updating supporter data:", error);
         }
     });
+
+    // Optimize search input with debounce
+    countrySearch.addEventListener(
+        "input",
+        debounce(() => {
+            const searchTerm = countrySearch.value.toLowerCase();
+            const filteredCountries = Object.keys(countries).filter((country) =>
+                country.toLowerCase().includes(searchTerm)
+            );
+            populateCountries(filteredCountries);
+        }, 300)
+    );
 
     // Fetch and cache country data, then populate the dropdown
     preloadCountryData();

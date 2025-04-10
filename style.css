@@ -47,11 +47,12 @@ header {
     font-size: 1rem;
     padding: 8px 12px;
     border-radius: 5px;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth hover effect */
 }
 
 .nav-link:hover {
     background-color: #005F2E; /* Darker green for hover */
+    transform: scale(1.05); /* Slight zoom effect */
 }
 
 /* Highlight active navigation link */
@@ -80,6 +81,12 @@ header {
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
     color: #ffffff;
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smooth hover effect */
+}
+
+.container:hover {
+    transform: scale(1.02); /* Slight zoom effect */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
 }
 
 /* Fix text alignment and spacing */
@@ -152,7 +159,7 @@ button {
     font-size: 16px;
     cursor: pointer;
     border-radius: 5px;
-    transition: all 0.3s ease;
+    transition: all 0.3s ease; /* Smooth hover effect */
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
 }
 
@@ -164,6 +171,7 @@ button:disabled {
 
 button:hover:not(:disabled) {
     background-color: #005F2E; /* Darker green for hover */
+    transform: translateY(-2px); /* Slight lift effect */
     box-shadow: 0 6px 8px rgba(0, 0, 0, 0.4);
 }
 
@@ -255,4 +263,13 @@ footer {
     footer {
         font-size: 10px;
     }
+}
+
+/* Add smooth transitions for map markers */
+.leaflet-marker-icon {
+    transition: transform 0.2s ease; /* Smooth marker hover effect */
+}
+
+.leaflet-marker-icon:hover {
+    transform: scale(1.2); /* Slight zoom effect on hover */
 }

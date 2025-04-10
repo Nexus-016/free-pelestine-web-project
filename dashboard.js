@@ -8,6 +8,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     let countries = {};
     let supporterData = {};
+    const markers = new Map(); // Store markers by country
 
     const API_URL = "http://localhost:5000/api/supporters"; // Backend API URL
 
@@ -51,31 +52,36 @@ document.addEventListener("DOMContentLoaded", async () => {
         return Math.min(1, count / 50); // Normalize brightness (max 1 for 50+ votes)
     }
 
-    // Update the map with the latest data
+    // Optimize map marker updates by reusing existing markers
     function updateMap() {
-        map.eachLayer((layer) => {
-            if (layer instanceof L.CircleMarker) {
-                map.removeLayer(layer); // Remove existing markers
-            }
-        });
-
-        Object.keys(supporterData).forEach(country => {
+        Object.keys(supporterData).forEach((country) => {
             const count = supporterData[country];
             const coordinates = countries[country];
 
             if (coordinates) {
                 const brightness = getBrightness(count);
-                const circle = L.circleMarker(coordinates, {
-                    radius: 10,
-                    fillColor: `rgba(255, 255, 0, ${brightness})`, // Brightness affects opacity
-                    color: '#FFD700',
-                    weight: 1,
-                    fillOpacity: brightness
-                }).addTo(map);
 
-                circle.bindPopup(`<b>${country}</b><br>Supporters: ${count}`);
-            } else {
-                console.warn(`Coordinates not found for country: ${country}`);
+                if (markers.has(country)) {
+                    // Update existing marker
+                    const marker = markers.get(country);
+                    marker.setStyle({
+                        fillColor: `rgba(255, 255, 0, ${brightness})`,
+                        fillOpacity: brightness,
+                    });
+                    marker.setPopupContent(`<b>${country}</b><br>Supporters: ${count}`);
+                } else {
+                    // Add new marker
+                    const circle = L.circleMarker(coordinates, {
+                        radius: 10,
+                        fillColor: `rgba(255, 255, 0, ${brightness})`,
+                        color: "#FFD700",
+                        weight: 1,
+                        fillOpacity: brightness,
+                    }).addTo(map);
+
+                    circle.bindPopup(`<b>${country}</b><br>Supporters: ${count}`);
+                    markers.set(country, circle);
+                }
             }
         });
     }
