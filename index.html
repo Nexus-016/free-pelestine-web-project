@@ -3,55 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Voices for Palestine</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Support Palestine</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <!-- Standardized Header -->
     <header>
-        <div class="header-container">
-            <h1 class="site-title">Voices for Palestine</h1>
-            <nav class="nav-menu">
-                <a href="index.html" class="nav-link active">Home</a>
-                <a href="dashboard.html" class="nav-link">Dashboard</a>
-                <a href="news.html" class="nav-link">News</a>
-                <a href="about.html" class="nav-link">About</a>
-            </nav>
-        </div>
+        <nav>
+            <div class="logo">Peace Initiative</div>
+            <ul>
+                <li><a href="#" class="active">Home</a></li>
+                <li><a href="#">About</a></li>
+                <li><a href="#">Contact</a></li>
+            </ul>
+        </nav>
     </header>
-    <div class="container">
-        <h1>Are you human? Prove it!</h1>
-        <p>Join thousands worldwide showing support. One click. One voice.</p>
-        <div class="select-container">
-            <label for="countrySelect">Your country:</label>
-            <select id="countrySelect" disabled>
-                <!-- Countries will be dynamically populated -->
-            </select>
-        </div>
-        <div class="question-container">
-            <label>Which side do you support?</label>
-            <div class="answer-options">
-                <label><input type="radio" name="supportSide" value="Palestine"> Palestine</label>
-                <label><input type="radio" name="supportSide" value="Israel"> Israel</label>
+
+    <main>
+        <section class="hero">
+            <h1>Stand for Humanity</h1>
+            <p>Join thousands of people supporting peace and humanitarian aid.</p>
+            <button id="supportBtn" class="btn-support">Support Palestine</button>
+        </section>
+
+        <section id="newUserContent" class="hidden">
+            <h2>Thank You for Your Support</h2>
+            <p>As a new supporter, you now have access to additional resources and ways to help.</p>
+            <div class="resources">
+                <div class="resource-card">
+                    <h3>Humanitarian Aid</h3>
+                    <p>Learn about organizations providing direct assistance.</p>
+                </div>
+                <div class="resource-card">
+                    <h3>Educational Resources</h3>
+                    <p>Access materials about the history and current situation.</p>
+                </div>
+                <div class="resource-card">
+                    <h3>Community Actions</h3>
+                    <p>Find local and global initiatives you can join.</p>
+                </div>
             </div>
-        </div>
-        <button id="supportButton" disabled>
-            <span>I Support Palestine</span>
-        </button>
-        <p id="thankYouMessage" class="hidden">Thank you. Your support has been recorded.</p>
-        <p id="supportCount">Loading...</p>
-        <div class="share">
-            <p>Share to amplify. Your voice matters.</p>
-        </div>
-    </div>
+        </section>
+    </main>
+
     <footer>
-        <p>
-            Voices for Palestine | Powered by Humanity | 
-            <a href="https://www.facebook.com/alamin.edits" target="_blank" style="color: #ffffff; text-decoration: none;">Al Amin</a>
-        </p>
+        <p>&copy; 2023 Peace Initiative | This is a demonstration site</p>
     </footer>
-    <script src="firebase-config.js" type="module"></script>
-    <script src="script.js" type="module"></script>
-    <script src="navigation.js" type="module"></script>
+
+    <script src="script.js"></script>
 </body>
 </html>

@@ -12,6 +12,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     const supportSideRadios = document.querySelectorAll("input[name='supportSide']");
     const menuToggle = document.querySelector(".menu-toggle");
     const navMenu = document.querySelector(".nav-menu");
+    const supportBtn = document.getElementById('supportBtn');
+    const newUserContent = document.getElementById('newUserContent');
 
     const SUPPORTERS_REF = ref(database, "supporters");
     const HAS_VOTED_KEY = "hasVoted"; // LocalStorage key to track voting status
@@ -74,5 +76,30 @@ document.addEventListener("DOMContentLoaded", async () => {
         } catch (error) {
             console.error("Error updating supporter data:", error);
         }
+    });
+
+    // Check if user is new (hasn't clicked the button before)
+    const hasSupported = localStorage.getItem('supportedPalestine');
+    
+    if (hasSupported === 'true') {
+        // If returning user, already show the content
+        newUserContent.classList.remove('hidden');
+        supportBtn.textContent = 'Thank You for Supporting';
+        supportBtn.disabled = true;
+    }
+    
+    supportBtn.addEventListener('click', function() {
+        // Unlock content for new users
+        newUserContent.classList.remove('hidden');
+        
+        // Smooth scroll to the newly revealed content
+        newUserContent.scrollIntoView({ behavior: 'smooth' });
+        
+        // Save that user has supported
+        localStorage.setItem('supportedPalestine', 'true');
+        
+        // Update button
+        supportBtn.textContent = 'Thank You for Supporting';
+        supportBtn.disabled = true;
     });
 });
