@@ -8,7 +8,8 @@
   ],
   "version": 2,
   "builds": [
-    { "src": "server.js", "use": "@vercel/node" }
+    { "src": "firebase-config.js", "use": "@vercel/static-build" },
+    { "src": "dashboard.js", "use": "@vercel/static-build" }
   ],
   "routes": [
     { "src": "/api/(.*)", "dest": "server.js" }
