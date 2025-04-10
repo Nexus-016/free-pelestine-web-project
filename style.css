@@ -20,6 +20,7 @@ header {
     position: sticky;
     top: 0;
     z-index: 1000;
+    width: 100%; /* Ensure the header spans the full width */
 }
 
 .header-container {
@@ -36,22 +37,14 @@ header {
     margin: 0;
 }
 
-/* Mobile Menu Styles */
+/* Navigation Menu Styles */
 .nav-menu {
-    display: none; /* Hide the menu by default */
-    flex-direction: column;
-    background-color: #D71920; /* Red background for Palestinian theme */
-    position: absolute;
-    top: 100%;
-    right: 0;
-    left: 0;
-    padding: 10px 0;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-    z-index: 1000; /* Ensure it appears above other elements */
+    display: flex;
+    gap: 15px;
 }
 
 .nav-menu.active {
-    display: flex; /* Show the menu when active */
+    display: flex; /* Ensure the menu is displayed when active */
 }
 
 .menu-toggle {
@@ -73,29 +66,6 @@ header {
     background-color: #005F2E; /* Darker green for hover */
 }
 
-@media (max-width: 768px) {
-    .nav-menu {
-        display: none;
-        flex-direction: column;
-        background-color: #D71920;
-        position: absolute;
-        top: 100%;
-        right: 0;
-        left: 0;
-        padding: 10px 0;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-        z-index: 1000; /* Ensure it appears above other elements */
-    }
-
-    .nav-menu.active {
-        display: flex;
-    }
-
-    .menu-toggle {
-        display: block; /* Show the menu toggle button on mobile */
-    }
-}
-
 .nav-link {
     color: #ffffff;
     text-decoration: none;
@@ -115,6 +85,30 @@ header {
     background-color: #005F2E; /* Darker green for active link */
     font-weight: bold;
     border: 1px solid #ffffff; /* Add a subtle border for emphasis */
+}
+
+/* Mobile Menu Styles */
+@media (max-width: 768px) {
+    .nav-menu {
+        display: none; /* Hide the menu by default on mobile */
+        flex-direction: column;
+        background-color: #D71920;
+        position: absolute;
+        top: 100%;
+        right: 0;
+        left: 0;
+        padding: 10px 0;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        z-index: 1000; /* Ensure it appears above other elements */
+    }
+
+    .nav-menu.active {
+        display: flex; /* Show the menu when active */
+    }
+
+    .menu-toggle {
+        display: block; /* Show the menu toggle button on mobile */
+    }
 }
 
 /* Container Styles */
