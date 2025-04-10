@@ -32,8 +32,8 @@ async function initDashboard() {
             throw new Error('World map container not found');
         }
 
-        const width = worldMap.clientWidth || 800;
-        const height = 500;
+        const width = Math.min(worldMap.clientWidth, 1000); // Limit max width
+        const height = Math.min(width * 0.5, 500); // Maintain aspect ratio
         
         console.log('[Dashboard] Setting up SVG with dimensions:', { width, height });
         
@@ -43,7 +43,9 @@ async function initDashboard() {
         const svg = d3.select('#world-map')
             .append('svg')
             .attr('width', width)
-            .attr('height', height);
+            .attr('height', height)
+            .attr('viewBox', `0 0 ${width} ${height}`)
+            .attr('preserveAspectRatio', 'xMidYMid meet');
 
         const projection = d3.geoNaturalEarth1()
             .fitSize([width, height], countries);
@@ -112,50 +114,34 @@ function updateMapColors(countries) {
             throw new Error('Invalid countries data');
         }
 
-        const supportCounts = Object.values(countries).map(c => (c && c.count) || 0);
-        if (supportCounts.length === 0) {
-            console.log('[Dashboard] No support data yet');
-            return;
-        }
-
-        const maxSupport = Math.max(...supportCounts, 1);
-        console.log('[Dashboard] Max support count:', maxSupport);
-
         // Reset all countries first
         document.querySelectorAll('.country').forEach(el => {
-            el.style.fill = '#2D2D2D'; // dark-secondary color
+            el.style.fill = '#2D2D2D';
             el.classList.remove('country-glow-low', 'country-glow-medium', 'country-glow-high');
         });
 
         // Update countries with support
         Object.entries(countries).forEach(([code, data]) => {
-            console.log('Processing country:', code, data);
             const element = document.querySelector(`#country-${code}`);
             if (element) {
                 const count = data.count || 0;
-                const intensity = count / maxSupport;
-                console.log('Country intensity:', code, intensity);
-
-                // Set red color with intensity
-                element.style.fill = `rgba(228, 49, 43, ${Math.max(0.3, intensity)})`; // Minimum 0.3 opacity
-
-                // Remove existing glow classes
-                element.classList.remove('country-glow-low', 'country-glow-medium', 'country-glow-high');
-
-                // Add appropriate glow class based on absolute count
-                if (count >= 10) {
+                
+                // Add glow based on absolute count values
+                if (count >= 20) {
                     element.classList.add('country-glow-high');
-                    console.log('Added high glow to:', code);
-                } else if (count >= 5) {
+                } else if (count >= 10) {
                     element.classList.add('country-glow-medium');
-                    console.log('Added medium glow to:', code);
                 } else if (count >= 1) {
                     element.classList.add('country-glow-low');
-                    console.log('Added low glow to:', code);
                 }
 
                 // Add tooltip
-                element.setAttribute('title', `${data.name}: ${data.count} supporters`);
+                element.setAttribute('title', `${data.name}: ${count} supporters`);
+                
+                // Add click handler to show info
+                element.onclick = () => {
+                    alert(`${data.name}\nSupport Count: ${count}`);
+                };
             }
         });
     } catch (error) {
