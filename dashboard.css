@@ -7,14 +7,22 @@
     --dark-secondary: #2D2D2D;
 }
 
+/* Update body styles for proper footer integration */
 body {
     font-family: Arial, sans-serif;
     margin: 0;
-    padding: 20px;
-    padding-top: 80px;
+    padding: 0;
     background: var(--dark-bg);
     color: var(--dark-text);
     min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.page-content {
+    flex: 1;
+    width: 100%;
+    padding: 80px 20px 20px 20px;
 }
 
 .header {
@@ -54,7 +62,7 @@ body {
 
 .dashboard-container {
     max-width: 1200px;
-    margin: 0 auto;
+    margin: 0 auto 2rem auto;
     padding: 2rem;
     background: var(--dark-surface);
     color: var(--dark-text);

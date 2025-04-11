@@ -44,17 +44,25 @@
     color: var(--dark-text);
 }
 
+/* Fix body layout to prevent footer collapse */
 body {
     font-family: Arial, sans-serif;
     margin: 0;
-    padding: 20px;
-    padding-top: 80px;
+    padding: 0;
     background: var(--dark-bg);
     color: var(--dark-text);
     min-height: 100vh;
     display: flex;
+    flex-direction: column;
+}
+
+.page-content {
+    flex: 1;
+    display: flex;
     align-items: center;
     justify-content: center;
+    width: 100%;
+    padding: 80px 20px 20px 20px;
 }
 
 .container {
@@ -451,10 +459,13 @@ a:hover {
     background: var(--dark-surface);
     color: var(--dark-text);
     padding: 2.5rem 0 1rem 0;
-    margin-top: 3rem;
+    margin-top: auto;
     border-top: 1px solid rgba(255, 255, 255, 0.05);
     width: 100%;
     box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.1);
+    position: relative;
+    z-index: 100;
+    flex-shrink: 0;
 }
 
 .footer-container {
@@ -593,5 +604,112 @@ a:hover {
     
     .footer-section {
         padding-bottom: 1rem;
+    }
+}
+
+/* Contact Section Styles */
+.contact-section {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background: var(--dark-secondary);
+    border-radius: 8px;
+    border-left: 4px solid var(--palestine-red);
+    margin-bottom: 2rem;
+}
+
+.contact-section h2 {
+    color: var(--palestine-red);
+    margin-top: 0;
+}
+
+.social-profiles {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin: 1.5rem 0;
+}
+
+.social-profile-link {
+    display: flex;
+    align-items: center;
+    padding: 1rem 1.2rem;
+    background: var(--dark-surface);
+    border-radius: 6px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    color: var(--dark-text);
+}
+
+.social-profile-link:hover {
+    transform: translateX(5px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    text-decoration: none;
+}
+
+.social-icon {
+    font-size: 1.4rem;
+    font-weight: bold;
+    margin-right: 1rem;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.social-details {
+    display: flex;
+    flex-direction: column;
+}
+
+.social-name {
+    font-weight: bold;
+    font-size: 1rem;
+}
+
+.social-username {
+    font-size: 0.9rem;
+    opacity: 0.7;
+}
+
+.facebook-profile .social-icon {
+    background: #4267B2;
+    color: white;
+}
+
+.facebook-profile:hover {
+    background: linear-gradient(to right, rgba(66, 103, 178, 0.1), var(--dark-surface));
+}
+
+.github-profile .social-icon {
+    background: #24292e;
+    color: white;
+}
+
+.github-profile:hover {
+    background: linear-gradient(to right, rgba(36, 41, 46, 0.1), var(--dark-surface));
+}
+
+/* Responsive adjustments for contact section */
+@media (max-width: 768px) {
+    .social-profile-link {
+        padding: 0.8rem 1rem;
+    }
+    
+    .social-icon {
+        font-size: 1.2rem;
+        width: 28px;
+        height: 28px;
+        margin-right: 0.8rem;
+    }
+    
+    .social-name {
+        font-size: 0.9rem;
+    }
+    
+    .social-username {
+        font-size: 0.8rem;
     }
 }
