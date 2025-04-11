@@ -2,11 +2,10 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Palestine Support Dashboard</title>
     <link rel="stylesheet" href="dashboard.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script src="https://cdn.jsdelivr.net/npm/topojson@3"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </head>
 <body>
@@ -28,28 +27,17 @@
             </div>
         </div>
         
-        <div class="map-container">
-            <div id="palestine-map"></div>
-            
-            <div class="live-updates">
-                <h3>Live Situation Updates</h3>
-                <div class="updates-wrapper">
-                    <iframe 
-                        id="live-map-frame" 
-                        src="https://www.ochaopt.org/page/live-map" 
-                        frameborder="0" 
-                        allowfullscreen>
-                    </iframe>
-                </div>
-                <div class="update-source">
-                    Source: UN OCHA - Office for the Coordination of Humanitarian Affairs
-                </div>
+        <div class="map-section">
+            <div id="palestine-map">
+                <div class="loading-map">Loading Palestine map...</div>
             </div>
-        </div>
-
-        <div class="country-list">
-            <h3>Top Supporting Countries</h3>
-            <ul id="top-countries"></ul>
+            
+            <div class="country-list">
+                <h3>Top Supporting Countries</h3>
+                <ul id="top-countries">
+                    <li class="loading">Loading country data...</li>
+                </ul>
+            </div>
         </div>
     </div>
 

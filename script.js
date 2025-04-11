@@ -159,29 +159,72 @@ function isMobileDevice() {
             navigator.userAgent.match(/Windows Phone/i));
 }
 
-// Simplified share function
-function share(platform) {
-    const text = "I just stood with Palestine. Join thousands of others: ";
-    const url = window.location.href;
-    
-    if (isMobileDevice()) {
-        // Use navigator.share API if available (modern mobile browsers)
-        if (navigator.share) {
+// Enhanced sharing function with personalized message
+async function share(platform) {
+    try {
+        // Get user's supporter number and country
+        const totalSnapshot = await window.db.ref('totalSupports').get();
+        const supporterNumber = totalSnapshot.val() || 0;
+        
+        // Get country info (fallback to stored location if API fails)
+        let locationData = JSON.parse(localStorage.getItem('palestine_location_data') || '{}');
+        if (!locationData.countryName) {
+            try {
+                locationData = await getLocationData();
+                localStorage.setItem('palestine_location_data', JSON.stringify(locationData));
+            } catch (error) {
+                console.error('Error fetching location:', error);
+                locationData = { countryName: "the world" };
+            }
+        }
+        
+        const country = locationData.countryName || "the world";
+        
+        // Create personalized message
+        const text = `I am supporter #${supporterNumber.toLocaleString()} from ${country} standing with Palestine. Join me:`;
+        const url = window.location.href;
+        const hashTags = "FreePalestine,StandWithPalestine,HumanRights";
+        
+        // Use native sharing on mobile if available
+        if (isMobileDevice() && navigator.share) {
             navigator.share({
                 title: 'Stand with Palestine',
                 text: text,
                 url: url,
-            })
-            .catch((error) => console.log('Error sharing:', error));
+            }).catch(error => console.log('Error sharing:', error));
             return;
         }
+        
+        // Platform-specific sharing URLs
+        let shareUrl;
+        switch(platform) {
+            case 'twitter':
+                shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}&hashtags=${hashTags}`;
+                break;
+            case 'facebook':
+                shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}&quote=${encodeURIComponent(text)}`;
+                break;
+            case 'whatsapp':
+                shareUrl = `https://wa.me/?text=${encodeURIComponent(text + ' ' + url)}`;
+                break;
+            case 'telegram':
+                shareUrl = `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`;
+                break;
+            case 'email':
+                shareUrl = `mailto:?subject=Stand with Palestine&body=${encodeURIComponent(text + '\n\n' + url)}`;
+                break;
+            default:
+                shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}&hashtags=${hashTags}`;
+        }
+        
+        window.open(shareUrl, '_blank');
+    } catch (error) {
+        console.error('Error in share function:', error);
+        // Fallback to basic sharing if anything fails
+        const text = "Stand with Palestine. Join me:";
+        const url = window.location.href;
+        window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
     }
-    
-    // Fallback to traditional sharing
-    window.open(platform === 'twitter' 
-        ? `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`
-        : `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`
-    );
 }
 
 // Add this to test the connection

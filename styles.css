@@ -295,6 +295,75 @@ a:hover {
     margin-top: 1rem;
 }
 
+/* Enhanced Social Share Buttons */
+.social-share-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.8rem;
+    margin: 1.5rem 0;
+}
+
+.share-btn {
+    display: flex;
+    align-items: center;
+    padding: 0.7rem 1rem;
+    border: none;
+    border-radius: 5px;
+    font-weight: bold;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 120px;
+    justify-content: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.share-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.share-icon {
+    margin-right: 8px;
+    font-size: 1.1rem;
+    font-weight: bold;
+}
+
+.twitter {
+    background: #1da1f2;
+}
+
+.facebook {
+    background: #4267B2;
+}
+
+.whatsapp {
+    background: #25D366;
+}
+
+.telegram {
+    background: #0088cc;
+}
+
+.email {
+    background: #BB001B;
+}
+
+/* Mobile Optimization for Share Buttons */
+@media (max-width: 768px) {
+    .social-share-buttons {
+        flex-direction: column;
+        align-items: center;
+        gap: 0.6rem;
+    }
+    
+    .share-btn {
+        width: 80%;
+        max-width: 250px;
+    }
+}
+
 /* Mobile Responsiveness */
 @media (max-width: 768px) {
     body {

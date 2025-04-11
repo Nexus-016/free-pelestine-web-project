@@ -441,3 +441,72 @@ h1, h2, h3 {
         font-size: 0.7rem;
     }
 }
+
+/* Map section layout */
+.map-section {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-gap: 2rem;
+    margin: 2rem 0;
+}
+
+@media (min-width: 992px) {
+    .map-section {
+        grid-template-columns: 3fr 2fr;
+    }
+}
+
+/* Loading and error states */
+.loading-map {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    color: var(--palestine-green);
+    font-size: 1.2rem;
+    text-align: center;
+    animation: pulseFade 1.5s infinite;
+}
+
+.map-error {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    background: rgba(228, 49, 43, 0.1);
+    padding: 2rem;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.map-error h3 {
+    color: var(--palestine-red);
+    margin-top: 0;
+}
+
+li.loading, li.error, li.no-data {
+    text-align: center;
+    padding: 1rem;
+    background: none;
+    border: none !important;
+}
+
+li.loading {
+    color: var(--palestine-green);
+    animation: pulseFade 1.5s infinite;
+}
+
+li.error {
+    color: var(--palestine-red);
+}
+
+li.no-data {
+    color: var(--dark-text);
+    opacity: 0.7;
+}
+
+@keyframes pulseFade {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
+}
