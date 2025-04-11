@@ -147,10 +147,37 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
+// Detect mobile devices for customized experience
+function isMobileDevice() {
+    return (window.innerWidth <= 768) || 
+           (navigator.userAgent.match(/Android/i) ||
+            navigator.userAgent.match(/webOS/i) ||
+            navigator.userAgent.match(/iPhone/i) ||
+            navigator.userAgent.match(/iPad/i) ||
+            navigator.userAgent.match(/iPod/i) ||
+            navigator.userAgent.match(/BlackBerry/i) ||
+            navigator.userAgent.match(/Windows Phone/i));
+}
+
 // Simplified share function
 function share(platform) {
     const text = "I just stood with Palestine. Join thousands of others: ";
     const url = window.location.href;
+    
+    if (isMobileDevice()) {
+        // Use navigator.share API if available (modern mobile browsers)
+        if (navigator.share) {
+            navigator.share({
+                title: 'Stand with Palestine',
+                text: text,
+                url: url,
+            })
+            .catch((error) => console.log('Error sharing:', error));
+            return;
+        }
+    }
+    
+    // Fallback to traditional sharing
     window.open(platform === 'twitter' 
         ? `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`
         : `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`

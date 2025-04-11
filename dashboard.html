@@ -3,10 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Support Dashboard - Palestine</title>
+    <title>Palestine Support Dashboard</title>
     <link rel="stylesheet" href="dashboard.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
     <script src="https://cdn.jsdelivr.net/npm/topojson@3"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </head>
@@ -21,14 +20,33 @@
     </header>
 
     <div class="dashboard-container">
-        <h1>Global Support Dashboard</h1>
+        <h1>Palestine Support Dashboard</h1>
         <div class="stats">
             <div class="total-supports">
                 <h2>Total Support Count</h2>
                 <div id="total-counter">0</div>
             </div>
         </div>
-        <div id="world-map"></div>
+        
+        <div class="map-container">
+            <div id="palestine-map"></div>
+            
+            <div class="live-updates">
+                <h3>Live Situation Updates</h3>
+                <div class="updates-wrapper">
+                    <iframe 
+                        id="live-map-frame" 
+                        src="https://www.ochaopt.org/page/live-map" 
+                        frameborder="0" 
+                        allowfullscreen>
+                    </iframe>
+                </div>
+                <div class="update-source">
+                    Source: UN OCHA - Office for the Coordination of Humanitarian Affairs
+                </div>
+            </div>
+        </div>
+
         <div class="country-list">
             <h3>Top Supporting Countries</h3>
             <ul id="top-countries"></ul>
@@ -52,7 +70,6 @@
         firebase.initializeApp(firebaseConfig);
         window.db = firebase.database();
     </script>
-    <script src="map-data.js"></script>
     <script src="dashboard.js"></script>
 </body>
 </html>
