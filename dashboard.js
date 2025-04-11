@@ -3,7 +3,7 @@ function initDashboard() {
     updateTotalCounter();
     updateTopCountries();
     
-    // Try to load Palestine map
+    // Initialize Palestine map with local data
     initPalestineMap();
 }
 
@@ -12,13 +12,16 @@ function initPalestineMap() {
         const mapElement = document.getElementById('palestine-map');
         if (!mapElement) return;
         
+        // Clear any loading message
+        mapElement.innerHTML = '';
+        
         // Initialize map focused on Palestine
         const map = L.map('palestine-map', {
             minZoom: 7,
             maxZoom: 10,
             zoomControl: true,
             attributionControl: false
-        }).setView([31.5, 34.8], 8);
+        }).setView([31.9, 35.0], 8); // Center between Gaza and West Bank
         
         window.map = map;
         
@@ -28,36 +31,10 @@ function initPalestineMap() {
             opacity: 0.8
         }).addTo(map);
         
-        // Try multiple sources for Palestine GeoJSON
-        loadPalestineGeoJSON(map)
-            .catch(error => {
-                console.error("GeoJSON loading failed:", error);
-                fallbackToPalestineBoundary(map);
-            });
-    } catch (error) {
-        console.error("Map initialization error:", error);
-        showMapError();
-    }
-}
-
-// Try multiple sources for Palestine GeoJSON
-async function loadPalestineGeoJSON(map) {
-    const sources = [
-        "https://raw.githubusercontent.com/datasets/geo-boundaries-world-110m/master/countries/PSE.geojson",
-        "https://raw.githubusercontent.com/KoGor/Maps.GeoInfo/master/GeoJSON/palestine.json",
-        "https://gist.githubusercontent.com/christopherthompson81/7c7ddd391c67c3114da215cea08f13e3/raw/84a3b5fa9c5699e9776bf40944a3b5abba2af2cd/palestine.geojson"
-    ];
-    
-    let error = null;
-    for (const source of sources) {
-        try {
-            const response = await fetch(source);
-            if (!response.ok) throw new Error(`Failed to load from ${source}`);
-            
-            const data = await response.json();
-            
+        // Use local Palestine GeoJSON data
+        if (window.palestineGeoJSON) {
             // Add Palestine with highlighted style
-            L.geoJSON(data, {
+            L.geoJSON(window.palestineGeoJSON, {
                 style: {
                     fillColor: '#E4312b',
                     weight: 2,
@@ -67,34 +44,82 @@ async function loadPalestineGeoJSON(map) {
                 }
             }).addTo(map);
             
-            // Add Palestine label
-            addPalestineLabel(map);
-            
-            console.log("Loaded Palestine GeoJSON successfully");
-            return true;
-        } catch (e) {
-            console.warn(`Error loading from ${source}:`, e);
-            error = e;
+            // Add Palestine labels
+            addPalestineLabels(map);
+        } else {
+            // Fallback if GeoJSON is not available
+            fallbackToPalestineBoundary(map);
         }
+    } catch (error) {
+        console.error("Map initialization error:", error);
+        showMapError();
     }
-    
-    throw error || new Error("All GeoJSON sources failed");
 }
 
-// Fallback to a simple polygon if GeoJSON fails
+// Add Palestine labels to map
+function addPalestineLabels(map) {
+    // Add West Bank label
+    const westBankLabel = L.divIcon({
+        className: 'country-label',
+        html: `<span>West Bank</span>`,
+        iconSize: [100, 40],
+        iconAnchor: [50, 20]
+    });
+
+    L.marker([32.0, 35.3], {
+        icon: westBankLabel,
+        interactive: false
+    }).addTo(map);
+    
+    // Add Gaza label
+    const gazaLabel = L.divIcon({
+        className: 'country-label',
+        html: `<span>Gaza</span>`,
+        iconSize: [80, 40],
+        iconAnchor: [40, 20]
+    });
+
+    L.marker([31.45, 34.40], {
+        icon: gazaLabel,
+        interactive: false
+    }).addTo(map);
+    
+    // Add Palestine main label
+    const palestineLabel = L.divIcon({
+        className: 'country-label palestine-main-label',
+        html: `<span>Palestine</span>`,
+        iconSize: [120, 50],
+        iconAnchor: [60, 25]
+    });
+
+    L.marker([31.7, 34.9], {
+        icon: palestineLabel,
+        interactive: false
+    }).addTo(map);
+}
+
+// Fallback to a simple polygon representation
 function fallbackToPalestineBoundary(map) {
     console.log("Using fallback Palestine boundary");
     
-    // Simple approximation of Palestine boundary
-    const palestineCoords = [
+    // Gaza Strip
+    const gazaCoords = [
         [31.22, 34.22], // Southwest
-        [31.22, 35.57], // Southeast
-        [32.55, 35.57], // Northeast
-        [32.55, 34.22]  // Northwest
+        [31.22, 34.58], // Southeast
+        [31.70, 34.58], // Northeast
+        [31.70, 34.22]  // Northwest
     ];
     
-    // Create a simple polygon
-    L.polygon(palestineCoords, {
+    // West Bank
+    const westBankCoords = [
+        [31.30, 35.00], // Southwest
+        [31.30, 35.60], // Southeast
+        [32.55, 35.60], // Northeast
+        [32.55, 35.00]  // Northwest
+    ];
+    
+    // Create polygons
+    L.polygon(gazaCoords, {
         fillColor: '#E4312b',
         weight: 2,
         opacity: 1,
@@ -102,24 +127,16 @@ function fallbackToPalestineBoundary(map) {
         fillOpacity: 0.7
     }).addTo(map);
     
-    // Add Palestine label
-    addPalestineLabel(map);
-}
-
-// Add Palestine label to map
-function addPalestineLabel(map) {
-    const center = [31.5, 34.8];
-    const label = L.divIcon({
-        className: 'country-label',
-        html: `<span>Palestine</span>`,
-        iconSize: [100, 40],
-        iconAnchor: [50, 20]
-    });
-
-    L.marker(center, {
-        icon: label,
-        interactive: false
+    L.polygon(westBankCoords, {
+        fillColor: '#E4312b',
+        weight: 2,
+        opacity: 1,
+        color: '#FFFFFF',
+        fillOpacity: 0.7
     }).addTo(map);
+    
+    // Add labels
+    addPalestineLabels(map);
 }
 
 // Show error message when map fails completely

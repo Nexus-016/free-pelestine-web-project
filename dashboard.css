@@ -224,6 +224,21 @@ body {
     white-space: nowrap;
 }
 
+/* Palestine specific labels */
+.palestine-main-label span {
+    background: var(--palestine-red);
+    font-size: 16px;
+    padding: 6px 12px;
+    box-shadow: 0 0 15px rgba(228, 49, 43, 0.8);
+}
+
+@media (max-width: 768px) {
+    .palestine-main-label span {
+        font-size: 14px;
+        padding: 4px 8px;
+    }
+}
+
 /* Top Countries List Styling */
 .country-list {
     background: var(--dark-secondary);
