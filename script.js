@@ -180,8 +180,8 @@ async function share(platform) {
         
         const country = locationData.countryName || "the world";
         
-        // Create personalized message
-        const text = `I am supporter #${supporterNumber.toLocaleString()} from ${country} standing with Palestine. Join me:`;
+        // Create personalized message exactly as specified
+        const text = `I am the ${supporterNumber.toLocaleString()} from ${country}. Learn more here:`;
         const url = window.location.href;
         const hashTags = "FreePalestine,StandWithPalestine,HumanRights";
         
@@ -189,7 +189,7 @@ async function share(platform) {
         if (isMobileDevice() && navigator.share) {
             navigator.share({
                 title: 'Stand with Palestine',
-                text: text,
+                text: text + ' ' + url,
                 url: url,
             }).catch(error => console.log('Error sharing:', error));
             return;
@@ -221,7 +221,7 @@ async function share(platform) {
     } catch (error) {
         console.error('Error in share function:', error);
         // Fallback to basic sharing if anything fails
-        const text = "Stand with Palestine. Join me:";
+        const text = "Stand with Palestine. Learn more here:";
         const url = window.location.href;
         window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
     }

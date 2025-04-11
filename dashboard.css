@@ -214,17 +214,61 @@ body {
 }
 
 .country-label span {
-    background: rgba(20, 153, 84, 0.8);
+    background: rgba(20, 153, 84, 0.7);
     color: white;
-    padding: 5px 10px;
+    padding: 4px 8px;
     border-radius: 4px;
     font-weight: bold;
-    font-size: 14px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    font-size: 12px;
+    box-shadow: 0 0 6px rgba(0, 0, 0, 0.3);
     white-space: nowrap;
 }
 
-/* Palestine specific labels */
+/* Region label specific style */
+.region-label span {
+    background: rgba(20, 153, 84, 0.5);
+    font-size: 11px;
+    padding: 3px 6px;
+}
+
+/* New main Palestine label without box background */
+.country-label-main {
+    background: none !important;
+    border: none !important;
+}
+
+.palestine-label {
+    font-size: 20px;
+    font-weight: bold;
+    color: #FFFFFF;
+    text-shadow: 
+        0 0 4px var(--palestine-red),
+        0 0 8px var(--palestine-red),
+        0 0 12px var(--palestine-red),
+        0 0 16px rgba(0, 0, 0, 0.8),
+        0 0 1px #000;
+    letter-spacing: 1px;
+    transform: scale(1);
+    animation: pulseLabel 2s infinite ease-in-out;
+}
+
+@keyframes pulseLabel {
+    0%, 100% { 
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% { 
+        transform: scale(1.05);
+        opacity: 0.9;
+    }
+}
+
+@media (max-width: 768px) {
+    .palestine-label {
+        font-size: 16px;
+    }
+}
+
 .palestine-main-label span {
     background: var(--palestine-red);
     font-size: 16px;
@@ -239,7 +283,7 @@ body {
     }
 }
 
-/* Top Countries List Styling */
+/* Enhanced Top Countries List Styling */
 .country-list {
     background: var(--dark-secondary);
     padding: 1.5rem;
@@ -248,35 +292,129 @@ body {
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
 
-.country-list li {
+.country-list h3 {
+    margin-top: 0;
+    margin-bottom: 1.2rem;
+    color: var(--palestine-red);
+    font-size: 1.4rem;
+    text-shadow: 0 0 10px rgba(228, 49, 43, 0.3);
+}
+
+.country-list ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
+    gap: 0.7rem;
+}
+
+.country-list li {
+    display: grid;
+    grid-template-columns: auto auto;
     align-items: center;
+    justify-content: space-between;
     padding: 0.8rem 1rem;
-    margin: 0.5rem 0;
-    border-radius: 4px;
-    background: var(--dark-surface);
+    margin: 0;
+    border-radius: 6px;
+    background: linear-gradient(to right, var(--dark-surface), #252525);
     transition: all 0.3s ease;
     border-left: 4px solid var(--palestine-red);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
 .country-list li:hover {
-    transform: translateX(5px);
+    transform: translateX(7px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.country-list li:nth-child(1) {
+    background: linear-gradient(to right, rgba(228, 49, 43, 0.2), #252525);
+    border-left-width: 6px;
+}
+
+.country-list li:nth-child(2),
+.country-list li:nth-child(3) {
+    background: linear-gradient(to right, rgba(228, 49, 43, 0.1), #252525);
+    border-left-width: 5px;
 }
 
 .country-name {
     font-weight: bold;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+}
+
+.country-name::before {
+    content: '';
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: var(--palestine-red);
+    margin-right: 8px;
 }
 
 .supporter-count {
     background: var(--palestine-red);
     color: white;
-    padding: 3px 8px;
-    border-radius: 12px;
+    padding: 4px 10px;
+    border-radius: 20px;
     font-size: 0.9rem;
     font-weight: bold;
-    min-width: 30px;
+    min-width: 35px;
     text-align: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Mobile-specific list styles */
+@media (max-width: 768px) {
+    .country-list {
+        padding: 1.2rem;
+    }
+    
+    .country-list h3 {
+        font-size: 1.2rem;
+        margin-bottom: 1rem;
+    }
+    
+    .country-list ul {
+        gap: 0.5rem;
+    }
+    
+    .country-list li {
+        padding: 0.7rem;
+        border-radius: 5px;
+        display: flex;
+        justify-content: space-between;
+    }
+    
+    .country-name {
+        font-size: 0.9rem;
+    }
+    
+    .supporter-count {
+        padding: 3px 8px;
+        font-size: 0.8rem;
+        min-width: 30px;
+    }
+}
+
+@media (max-width: 480px) {
+    .country-list {
+        padding: 1rem;
+    }
+    
+    .country-list li {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .supporter-count {
+        align-self: center;
+    }
 }
 
 h1, h2, h3 {

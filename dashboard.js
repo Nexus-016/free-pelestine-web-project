@@ -60,7 +60,7 @@ function initPalestineMap() {
 function addPalestineLabels(map) {
     // Add West Bank label
     const westBankLabel = L.divIcon({
-        className: 'country-label',
+        className: 'country-label region-label',
         html: `<span>West Bank</span>`,
         iconSize: [100, 40],
         iconAnchor: [50, 20]
@@ -73,7 +73,7 @@ function addPalestineLabels(map) {
     
     // Add Gaza label
     const gazaLabel = L.divIcon({
-        className: 'country-label',
+        className: 'country-label region-label',
         html: `<span>Gaza</span>`,
         iconSize: [80, 40],
         iconAnchor: [40, 20]
@@ -84,10 +84,10 @@ function addPalestineLabels(map) {
         interactive: false
     }).addTo(map);
     
-    // Add Palestine main label
+    // Add Palestine main label - now without a box background
     const palestineLabel = L.divIcon({
-        className: 'country-label palestine-main-label',
-        html: `<span>Palestine</span>`,
+        className: 'country-label-main',
+        html: `<div class="palestine-label">Palestine</div>`,
         iconSize: [120, 50],
         iconAnchor: [60, 25]
     });
