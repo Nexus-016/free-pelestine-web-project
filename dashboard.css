@@ -7,7 +7,7 @@
     --dark-secondary: #2D2D2D;
 }
 
-/* Update body styles for proper footer integration */
+/* Fix dashboard layout for proper footer display */
 body {
     font-family: Arial, sans-serif;
     margin: 0;
@@ -15,14 +15,24 @@ body {
     background: var(--dark-bg);
     color: var(--dark-text);
     min-height: 100vh;
+}
+
+.page-container {
     display: flex;
     flex-direction: column;
+    min-height: 100vh;
+    width: 100%;
+    position: relative;
+    box-sizing: border-box;
 }
 
 .page-content {
     flex: 1;
-    width: 100%;
     padding: 80px 20px 20px 20px;
+    width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
 }
 
 .header {
@@ -68,6 +78,103 @@ body {
     color: var(--dark-text);
     border-radius: 10px;
     box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    box-sizing: border-box;
+    width: 100%;
+}
+
+/* Footer specific fixes for dashboard */
+.footer {
+    flex-shrink: 0;
+    margin-top: auto;
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Mobile optimizations for footer on dashboard */
+@media (max-width: 768px) {
+    body {
+        margin: 0;
+        padding: 0;
+    }
+    
+    .page-content {
+        padding: 70px 10px 10px 10px;
+    }
+    
+    .dashboard-container {
+        padding: 1rem;
+        margin: 0 auto 1rem auto;
+        width: 100%;
+        max-width: 100%;
+    }
+    
+    .stats {
+        padding: 1rem;
+    }
+    
+    #total-counter {
+        font-size: 2rem;
+    }
+    
+    #palestine-map, .live-updates {
+        height: 300px;
+        margin: 1rem 0;
+    }
+    
+    /* Prevent horizontal overflow */
+    .map-section {
+        padding: 0;
+        margin: 1rem 0;
+        width: 100%;
+        overflow-x: hidden;
+    }
+    
+    /* Fix country list at mobile sizes */
+    .country-list {
+        width: 100%;
+        box-sizing: border-box;
+        margin-top: 1rem;
+    }
+    
+    .country-list li {
+        padding: 0.7rem;
+    }
+    
+    .country-name::before {
+        min-width: 6px;
+        min-height: 6px;
+    }
+}
+
+@media (max-width: 480px) {
+    .header {
+        padding: 0.5rem 0;
+    }
+    
+    .page-content {
+        padding: 60px 5px 5px 5px;
+    }
+    
+    .dashboard-container {
+        padding: 0.75rem;
+        border-radius: 8px;
+    }
+    
+    h1 {
+        font-size: 1.3rem;
+        margin: 0.5rem 0;
+    }
+    
+    h2 {
+        font-size: 1.1rem;
+        margin: 0.4rem 0;
+    }
+    
+    #palestine-map {
+        height: 250px;
+    }
 }
 
 .stats {
