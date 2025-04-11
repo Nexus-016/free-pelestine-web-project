@@ -2,50 +2,48 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Palestine Support Dashboard</title>
     <link rel="stylesheet" href="dashboard.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </head>
 <body>
-    <div class="page-container">
-        <header class="header">
-            <nav class="nav-links">
-                <a href="index.html">Support Palestine</a>
-                <a href="dashboard.html" class="active">View Dashboard</a>
-                <a href="news.html">Latest News</a>
-                <a href="about.html">About</a>
-            </nav>
-        </header>
+    <header class="header">
+        <nav class="nav-links">
+            <a href="index.html">Support Palestine</a>
+            <a href="dashboard.html">View Dashboard</a>
+            <a href="news.html">Latest News</a>
+            <a href="about.html">About</a>
+        </nav>
+    </header>
 
-        <div class="page-content">
-            <div class="dashboard-container">
-                <h1>Palestine Support Dashboard</h1>
-                <div class="stats">
-                    <div class="total-supports">
-                        <h2>Total Support Count</h2>
-                        <div id="total-counter">0</div>
-                    </div>
+    <div class="page-content">
+        <div class="dashboard-container">
+            <h1>Palestine Support Dashboard</h1>
+            <div class="stats">
+                <div class="total-supports">
+                    <h2>Total Support Count</h2>
+                    <div id="total-counter">0</div>
+                </div>
+            </div>
+            
+            <div class="map-section">
+                <div id="palestine-map">
+                    <div class="loading-map">Loading Palestine map...</div>
                 </div>
                 
-                <div class="map-section">
-                    <div id="palestine-map">
-                        <div class="loading-map">Loading Palestine map...</div>
-                    </div>
-                    
-                    <div class="country-list">
-                        <h3>Top Supporting Countries</h3>
-                        <ul id="top-countries">
-                            <li class="loading">Loading country data...</li>
-                        </ul>
-                    </div>
+                <div class="country-list">
+                    <h3>Top Supporting Countries</h3>
+                    <ul id="top-countries">
+                        <li class="loading">Loading country data...</li>
+                    </ul>
                 </div>
             </div>
         </div>
-
-        <div id="footer-placeholder"></div>
     </div>
+
+    <div id="footer-placeholder"></div>
 
     <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/10.6.0/firebase-app-compat.js"></script>
@@ -65,19 +63,8 @@
         window.db = firebase.database();
     </script>
     <script src="palestine-geojson.js"></script>
+    <script src="common.js"></script>
     <script src="dashboard.js"></script>
-    <script>
-        // Direct footer loading for dashboard page
-        document.addEventListener('DOMContentLoaded', function() {
-            fetch('footer.html')
-                .then(response => response.text())
-                .then(data => {
-                    document.getElementById('footer-placeholder').outerHTML = data;
-                })
-                .catch(error => {
-                    console.error('Error loading footer:', error);
-                });
-        });
-    </script>
+    <script src="update-footer.js"></script>
 </body>
 </html>

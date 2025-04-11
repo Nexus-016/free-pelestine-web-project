@@ -67,56 +67,69 @@ async function getLocationData() {
     };
 }
 
-// Update handleSupport function to handle rate limits
+// Refactor handleSupport to be more reliable
 async function handleSupport(button) {
     console.log('Support handler called');
     const checkbox = button.querySelector('.checkbox-tick');
     
     try {
+        // Immediately show visual feedback
         checkbox.classList.add('show');
         button.disabled = true;
+        
+        // Add a loading indicator
+        const buttonText = button.querySelector('span');
+        const originalText = buttonText.textContent;
+        buttonText.innerHTML = 'Processing... <span class="loading">●</span>';
 
-        const locationData = await getLocationData();
-        console.log('Location data:', locationData);
+        try {
+            const locationData = await getLocationData();
+            console.log('Location data:', locationData);
 
-        if (locationData.country === 'UNKNOWN') {
-            // Still record support but inform about location issue
-            const updates = {
-                'totalSupports': firebase.database.ServerValue.increment(1),
-                'unknownLocation': firebase.database.ServerValue.increment(1)
-            };
-            await window.db.ref().update(updates);
-        } else {
-            // Normal location update
-            const updates = {};
-            updates['totalSupports'] = firebase.database.ServerValue.increment(1);
-            updates[`countries/${locationData.country}`] = {
-                name: locationData.countryName,
-                count: firebase.database.ServerValue.increment(1)
-            };
-            await window.db.ref().update(updates);
+            if (locationData.country === 'UNKNOWN') {
+                // Still record support but inform about location issue
+                const updates = {
+                    'totalSupports': firebase.database.ServerValue.increment(1),
+                    'unknownLocation': firebase.database.ServerValue.increment(1)
+                };
+                await window.db.ref().update(updates);
+            } else {
+                // Normal location update
+                const updates = {};
+                updates['totalSupports'] = firebase.database.ServerValue.increment(1);
+                updates[`countries/${locationData.country}`] = {
+                    name: locationData.countryName,
+                    count: firebase.database.ServerValue.increment(1)
+                };
+                await window.db.ref().update(updates);
+            }
+
+            // Store in localStorage that support was recorded
+            localStorage.setItem('palestine_support_recorded', 'true');
+            localStorage.setItem('palestine_location_data', JSON.stringify(locationData));
+            
+        } catch (error) {
+            console.error('Error processing location:', error);
+            // Fallback: just increment total counter
+            await window.db.ref('totalSupports').transaction(current => (current || 0) + 1);
+            localStorage.setItem('palestine_support_recorded', 'true');
         }
 
-        // Update UI
-        document.getElementById('thank-you').classList.remove('hidden');
-        document.getElementById('share-section').classList.remove('hidden');
-        localStorage.setItem('palestine_support_recorded', 'true');
-        updateSupporterCount();
-
-    } catch (error) {
-        console.error('Error:', error);
-        // Still count the support even if location fails
-        try {
-            await window.db.ref('totalSupports').transaction(current => (current || 0) + 1);
+        // Update UI after successful recording
+        buttonText.textContent = 'Support Recorded!';
+        setTimeout(() => {
+            buttonText.textContent = originalText;
             document.getElementById('thank-you').classList.remove('hidden');
             document.getElementById('share-section').classList.remove('hidden');
-            localStorage.setItem('palestine_support_recorded', 'true');
             updateSupporterCount();
-        } catch (e) {
-            alert('Error recording support. Please try again.');
-            checkbox.classList.remove('show');
-            button.disabled = false;
-        }
+        }, 1000);
+
+    } catch (error) {
+        console.error('Fatal error:', error);
+        button.disabled = false;
+        checkbox.classList.remove('show');
+        button.querySelector('span').textContent = originalText;
+        alert('Error recording support. Please try again.');
     }
 }
 
@@ -127,12 +140,16 @@ async function updateSupporterCount() {
     document.getElementById('supporter-count').textContent = count.toLocaleString();
 }
 
-// Add click listener when document is ready
+// Fix home page vote button functionality
 document.addEventListener('DOMContentLoaded', function() {
     console.log('DOM loaded');
     const button = document.getElementById('support-btn');
     
     if (button) {
+        console.log('Support button found');
+        // Remove any previous event listeners to avoid duplicates
+        button.onclick = null;
+        
         // Check if already supported
         if (localStorage.getItem('palestine_support_recorded') === 'true') {
             button.disabled = true;
@@ -141,9 +158,13 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('share-section').classList.remove('hidden');
             updateSupporterCount();
         } else {
-            // Add click handler
-            button.onclick = handleSupport.bind(null, button);
+            // Add click handler directly (not using bind to avoid issues)
+            button.addEventListener('click', function() {
+                handleSupport(button);
+            });
         }
+    } else {
+        console.warn('Support button not found');
     }
 });
 
