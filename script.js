@@ -71,6 +71,8 @@ async function getLocationData() {
 async function handleSupport(button) {
     console.log('Support handler called');
     const checkbox = button.querySelector('.checkbox-tick');
+    const buttonText = button.querySelector('span');
+    const originalText = buttonText.textContent;
     
     try {
         // Immediately show visual feedback
@@ -78,8 +80,6 @@ async function handleSupport(button) {
         button.disabled = true;
         
         // Add a loading indicator
-        const buttonText = button.querySelector('span');
-        const originalText = buttonText.textContent;
         buttonText.innerHTML = 'Processing... <span class="loading">●</span>';
 
         try {
@@ -117,56 +117,80 @@ async function handleSupport(button) {
 
         // Update UI after successful recording
         buttonText.textContent = 'Support Recorded!';
+        
+        // Wait a moment, then show thank you message and update counter
         setTimeout(() => {
             buttonText.textContent = originalText;
             document.getElementById('thank-you').classList.remove('hidden');
             document.getElementById('share-section').classList.remove('hidden');
-            updateSupporterCount();
+            updateSupporterCount(); // Update the counter with the new value
         }, 1000);
 
     } catch (error) {
         console.error('Fatal error:', error);
         button.disabled = false;
         checkbox.classList.remove('show');
-        button.querySelector('span').textContent = originalText;
+        buttonText.textContent = originalText;
         alert('Error recording support. Please try again.');
     }
 }
 
-// Update supporter count function
-async function updateSupporterCount() {
-    const snapshot = await window.db.ref('totalSupports').get();
-    const count = snapshot.val() || 0;
-    document.getElementById('supporter-count').textContent = count.toLocaleString();
-}
+// Fix home page issue with Thank you message appearing too early
+// And fix supporter counter showing 0 before clicking
 
-// Fix home page vote button functionality
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOM loaded');
+// Initialize page state when DOM is loaded
+document.addEventListener('DOMContentLoaded', async function() {
+    console.log('DOM loaded - initializing home page');
     const button = document.getElementById('support-btn');
+    const thankYouDiv = document.getElementById('thank-you');
+    const shareSection = document.getElementById('share-section');
     
-    if (button) {
-        console.log('Support button found');
-        // Remove any previous event listeners to avoid duplicates
-        button.onclick = null;
-        
-        // Check if already supported
-        if (localStorage.getItem('palestine_support_recorded') === 'true') {
-            button.disabled = true;
-            button.querySelector('.checkbox-tick').classList.add('show');
-            document.getElementById('thank-you').classList.remove('hidden');
-            document.getElementById('share-section').classList.remove('hidden');
-            updateSupporterCount();
-        } else {
-            // Add click handler directly (not using bind to avoid issues)
-            button.addEventListener('click', function() {
-                handleSupport(button);
-            });
-        }
+    if (!button || !thankYouDiv || !shareSection) {
+        console.log('Not on the home page or elements missing');
+        return;
+    }
+    
+    // First, always fetch the current supporter count regardless of support status
+    await updateSupporterCount();
+    
+    // Check if user already supported
+    const hasSupported = localStorage.getItem('palestine_support_recorded') === 'true';
+    
+    if (hasSupported) {
+        console.log('User has already supported');
+        // Show thankyou and share section only if user has supported
+        button.disabled = true;
+        button.querySelector('.checkbox-tick').classList.add('show');
+        thankYouDiv.classList.remove('hidden');
+        shareSection.classList.remove('hidden');
     } else {
-        console.warn('Support button not found');
+        console.log('User has not supported yet');
+        // Make sure thank you and share sections are hidden
+        thankYouDiv.classList.add('hidden');
+        shareSection.classList.add('hidden');
+        
+        // Add click handler to the button
+        button.addEventListener('click', function() {
+            handleSupport(button);
+        });
     }
 });
+
+// Update supporter count function that always fetches from Firebase
+async function updateSupporterCount() {
+    try {
+        const snapshot = await window.db.ref('totalSupports').get();
+        const count = snapshot.val() || 0;
+        const countElement = document.getElementById('supporter-count');
+        
+        if (countElement) {
+            countElement.textContent = count.toLocaleString();
+            console.log('Updated supporter count to', count);
+        }
+    } catch (error) {
+        console.error('Error updating supporter count:', error);
+    }
+}
 
 // Detect mobile devices for customized experience
 function isMobileDevice() {
