@@ -72,12 +72,12 @@
             messagingSenderId: "1050986196348",
             appId: "1:1050986196348:web:44b91612eea60baea988f9",
             measurementId: "G-BC9ZS8VLFK",
-            databaseURL: "https://voice-for-palestine-by-nex-default-rtdb.asia-southeast1.firebasedatabase.app" // Updated URL
+            databaseURL: "https://voice-for-palestine-by-nex-default-rtdb.asia-southeast1.firebasedatabase.app"
         };
 
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
-        window.db = firebase.database(); // Make db global
+        window.db = firebase.database();
         
         // Test connection
         window.db.ref('.info/connected').on('value', function(snap) {
@@ -89,16 +89,8 @@
         });
     </script>
     
-    <!-- Add common.js before other scripts -->
     <script src="common.js"></script>
     <script src="script.js"></script>
-
-    <div style="position: fixed; bottom: 10px; right: 10px;">
-        <button onclick="resetSupport()" style="padding: 5px; background: #333; color: white; border: none; cursor: pointer;">
-            Reset Support (Testing)
-        </button>
-    </div>
-
     <script src="update-footer.js"></script>
 </body>
 </html>
