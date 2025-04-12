@@ -135,8 +135,7 @@ async function handleSupport(button) {
     }
 }
 
-// Fix home page issue with Thank you message appearing too early
-// And fix supporter counter showing 0 before clicking
+// Fix the premature Thank You message issue
 
 // Initialize page state when DOM is loaded
 document.addEventListener('DOMContentLoaded', async function() {
@@ -145,29 +144,39 @@ document.addEventListener('DOMContentLoaded', async function() {
     const thankYouDiv = document.getElementById('thank-you');
     const shareSection = document.getElementById('share-section');
     
+    // FIRST make sure these elements are always initially hidden
+    if (thankYouDiv) thankYouDiv.classList.add('hidden');
+    if (shareSection) shareSection.classList.add('hidden');
+    
     if (!button || !thankYouDiv || !shareSection) {
         console.log('Not on the home page or elements missing');
         return;
     }
     
-    // First, always fetch the current supporter count regardless of support status
+    // Always fetch the current supporter count first
     await updateSupporterCount();
     
-    // Check if user already supported
+    // Check localStorage directly with an explicit strict comparison
     const hasSupported = localStorage.getItem('palestine_support_recorded') === 'true';
+    console.log('Has user previously supported?', hasSupported);
     
-    if (hasSupported) {
-        console.log('User has already supported');
-        // Show thankyou and share section only if user has supported
+    if (hasSupported === true) { // Using strict comparison
+        console.log('User has already supported - showing thank you message');
         button.disabled = true;
         button.querySelector('.checkbox-tick').classList.add('show');
-        thankYouDiv.classList.remove('hidden');
-        shareSection.classList.remove('hidden');
+        setTimeout(() => {
+            thankYouDiv.classList.remove('hidden');
+            shareSection.classList.remove('hidden');
+        }, 500); // Small delay to ensure DOM is ready
     } else {
-        console.log('User has not supported yet');
-        // Make sure thank you and share sections are hidden
+        console.log('User has not supported yet - hiding thank you message');
+        // Double-check that elements are hidden
         thankYouDiv.classList.add('hidden');
         shareSection.classList.add('hidden');
+        
+        // Make sure button is enabled
+        button.disabled = false;
+        button.querySelector('.checkbox-tick').classList.remove('show');
         
         // Add click handler to the button
         button.addEventListener('click', function() {
@@ -176,7 +185,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
 });
 
-// Update supporter count function that always fetches from Firebase
+// Update supporter count function
 async function updateSupporterCount() {
     try {
         const snapshot = await window.db.ref('totalSupports').get();

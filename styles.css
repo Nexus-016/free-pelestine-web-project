@@ -9,6 +9,11 @@
     --dark-secondary: #2D2D2D;
 }
 
+/* Make sure .hidden class is properly defined */
+.hidden {
+    display: none !important; /* Use !important to ensure it's always hidden */
+}
+
 /* More robust body layout */
 body {
     font-family: Arial, sans-serif;
