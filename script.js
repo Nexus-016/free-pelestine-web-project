@@ -236,7 +236,7 @@ async function share(platform) {
         
         // Create personalized message exactly as specified
         const text = `I am the ${supporterNumber.toLocaleString()} from ${country}. Learn more here:`;
-        const url = window.location.href;
+        const url = window.location.origin + '/';
         const hashTags = "FreePalestine,StandWithPalestine,HumanRights";
         
         // Use native sharing on mobile if available
@@ -276,7 +276,7 @@ async function share(platform) {
         console.error('Error in share function:', error);
         // Fallback to basic sharing if anything fails
         const text = "Stand with Palestine. Learn more here:";
-        const url = window.location.href;
+        const url = window.location.origin + '/';
         window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
     }
 }

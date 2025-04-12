@@ -1,6 +1,7 @@
 /**
  * Firebase configuration - browser compatible version
  * This file replaces module imports with global Firebase objects
+ * Updated to support clean URLs without .html extension
  */
 
 // Initialize Firebase using the global Firebase object

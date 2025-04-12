@@ -4,6 +4,9 @@
  */
 
 document.addEventListener('DOMContentLoaded', function() {
+    // Add redirect check at the beginning
+    checkAndRedirectLegacyURLs();
+
     console.log('Common.js loaded');
     
     // Fix header navigation links
@@ -20,6 +23,18 @@ document.addEventListener('DOMContentLoaded', function() {
     // Fix any links that might be broken
     fixPageLinks();
 });
+
+/**
+ * Add a 301 redirect function to help with old links
+ */
+function checkAndRedirectLegacyURLs() {
+    // Check if URL has .html extension
+    const path = window.location.pathname;
+    if (path.endsWith('.html')) {
+        const newPath = path.replace('.html', '');
+        window.location.href = window.location.origin + newPath;
+    }
+}
 
 /**
  * Fix navigation links for responsive layout
@@ -56,12 +71,11 @@ function fixNavigationLinks() {
 }
 
 /**
- * Highlight the active page in navigation
+ * Fix function to highlight active page with clean URLs
  */
 function highlightActivePage() {
     // Get the current page pathname
     const path = window.location.pathname;
-    const pageName = path.split('/').pop();
     
     // Get all navigation links
     const links = document.querySelectorAll('.nav-links a');
@@ -77,9 +91,10 @@ function highlightActivePage() {
         if (!href) return;
         
         // Check if this link matches the current page
-        if (pageName === href || 
-            (pageName === '' && href === 'index.html') ||
-            (path.endsWith('/') && href === 'index.html')) {
+        if ((path === href) || 
+            (path === '/' && href === '/') ||
+            (path === '/index' && href === '/') ||
+            (path.startsWith(href) && href !== '/')) {
             link.classList.add('active');
         }
     });
