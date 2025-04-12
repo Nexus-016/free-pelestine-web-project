@@ -499,6 +499,7 @@ body {
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
     width: 100%;
     box-sizing: border-box;
+    flex-direction: row !important; /* Force row direction on all screens */
 }
 
 .country-list li:hover {
@@ -522,6 +523,11 @@ body {
     font-size: 1rem;
     display: flex;
     align-items: center;
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-right: 10px;
 }
 
 .country-name::before {
@@ -544,6 +550,7 @@ body {
     min-width: 35px;
     text-align: center;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    flex-shrink: 0;
 }
 
 /* Mobile-specific list styles */
@@ -564,8 +571,7 @@ body {
     .country-list li {
         padding: 0.7rem;
         border-radius: 5px;
-        display: flex;
-        justify-content: space-between;
+        align-items: center; /* Keep aligned center for mobile */
     }
     
     .country-name {
@@ -579,19 +585,28 @@ body {
     }
 }
 
+/* Extra small screen fixes */
 @media (max-width: 480px) {
     .country-list {
         padding: 1rem;
     }
     
     .country-list li {
-        flex-direction: row;
+        padding: 0.6rem;
+        /* Keep flex direction as row */
+        flex-direction: row !important;
         justify-content: space-between;
         align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .country-name {
+        max-width: 65%; /* Limit width to prevent overflow */
     }
     
     .supporter-count {
         align-self: center;
+        margin-left: auto; /* Push to the right */
     }
 }
 
@@ -759,13 +774,14 @@ h1, h2, h3 {
     }
     
     .country-list li {
-        flex-direction: column;
-        align-items: flex-start;
+        flex-direction: row;
+        align-items: center;
         gap: 0.5rem;
     }
     
     .supporter-count {
-        align-self: flex-end;
+        align-self: center;
+        margin-left: auto;
     }
     
     .update-source {

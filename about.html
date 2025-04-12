@@ -24,7 +24,7 @@
             <p>To unite voices worldwide in support of peace and human rights in Palestine.</p>
             
             <h2>How It Works</h2>
-            <p>Each supporter's location is anonymously recorded to show the global scale of solidarity.</p>
+            <p>Each supporter's location is anonymously recorded to highlight the global scale of solidarity. The news feed is updated every hour to bring you the latest verified updates related to Palestine from across the internet.</p>
             
             <h2>Privacy</h2>
             <p>We respect your privacy. All location data is anonymized and used only for visualization purposes.</p>
@@ -77,7 +77,13 @@
         </div>
     </div>
 
-    <script type="module" src="firebase-config.js"></script>
+    <!-- Load Firebase SDK first -->
+    <script src="https://www.gstatic.com/firebasejs/10.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.6.0/firebase-database-compat.js"></script>
+    
+    <!-- Now load our configuration file as a regular script, not a module -->
+    <script src="firebase-config.js"></script>
+    
     <script src="common.js"></script>
     <script src="update-footer.js"></script>
 </body>

@@ -188,25 +188,24 @@ function updateTopCountries() {
             list.innerHTML = sorted.map(([code, data]) => {
                 const count = data.count || 0;
                 const countryName = data.name || 'Unknown';
-                // Limit country name length for mobile
-                const displayName = countryName.length > 15 
-                    ? countryName.substring(0, 13) + '...' 
-                    : countryName;
                 
                 return `
-                    <li title="${countryName}">
-                        <span class="country-name">${displayName}</span>
+                    <li title="${countryName}" class="country-item">
+                        <span class="country-name">${countryName}</span>
                         <span class="supporter-count">${count.toLocaleString()}</span>
                     </li>
                 `;
             }).join('');
             
-            // Add event listener for overflow handling
-            if (window.innerWidth <= 768) {
+            // Make country names clickable on mobile to show full name
+            const isMobile = window.innerWidth <= 768;
+            if (isMobile) {
                 document.querySelectorAll('.country-name').forEach(el => {
+                    el.style.cursor = 'pointer';
                     el.addEventListener('click', function() {
-                        if (this.parentElement.title) {
-                            alert(this.parentElement.title);
+                        const countryName = this.parentElement.title;
+                        if (countryName && this.textContent.includes('...')) {
+                            alert(countryName);
                         }
                     });
                 });
