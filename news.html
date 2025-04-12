@@ -52,65 +52,103 @@
         </div>
     </div>
 
+    <!-- Load scripts in the correct order -->
     <script src="news.js"></script>
     <script src="common.js"></script>
     <script>
-        const apiKey = '79543b40144a4111292290a10f6ff7f4';
-        const newsCache = new NewsCache();
-        let updateTimer;
-
-        async function loadNews(isAutoRefresh = false) {
-            const container = document.getElementById('news-container');
-            const statusDiv = document.getElementById('update-status');
-            
-            try {
-                const articles = await newsCache.loadNews(apiKey);
-                
-                if (articles) {
-                    container.innerHTML = '';
-                    articles.forEach(article => {
-                        const div = document.createElement('div');
-                        div.className = 'news-card';
-                        div.innerHTML = `
-                            <h3><a href="${article.url}" target="_blank">${article.title}</a></h3>
-                            <p>${article.description || ''}</p>
-                            <small>Published: ${new Date(article.publishedAt).toLocaleString()}</small>
-                            <hr>
-                            <small>Source: ${article.source.name}</small>
-                        `;
-                        container.appendChild(div);
-                    });
-
-                    updateNextRefreshTimer();
-                }
-            } catch (error) {
-                container.innerHTML = `<div class="error">Failed to load news: ${error.message}</div>`;
+        document.addEventListener('DOMContentLoaded', function() {
+            // Make sure NewsCache is available
+            if (typeof NewsCache === 'undefined') {
+                console.error('NewsCache is not defined. Check if news.js is loaded correctly.');
+                document.getElementById('news-container').innerHTML = 
+                    '<div class="error">Unable to load news component. Please refresh the page.</div>';
+                return;
             }
-        }
 
-        function updateNextRefreshTimer() {
-            const cached = newsCache.getCachedNews();
-            if (cached) {
-                const nextUpdate = new Date(cached.timestamp + newsCache.CACHE_DURATION);
-                const updateDiv = document.getElementById('update-status');
-                
+            const apiKey = '79543b40144a4111292290a10f6ff7f4';
+            const newsCache = new NewsCache();
+            let updateTimer;
+
+            // Clean up any existing timer on page reload
+            if (updateTimer) {
                 clearInterval(updateTimer);
-                updateTimer = setInterval(() => {
-                    const now = new Date();
-                    const diff = nextUpdate - now;
-                    if (diff <= 0) {
-                        loadNews(true); // Auto refresh when time is up
-                    } else {
-                        const minutes = Math.floor(diff / 60000);
-                        const seconds = Math.floor((diff % 60000) / 1000);
-                        updateDiv.textContent = `Next update in: ${minutes}m ${seconds}s`;
-                    }
-                }, 1000);
             }
-        }
 
-        // Initial load
-        document.addEventListener('DOMContentLoaded', () => loadNews());
+            async function loadNews(isAutoRefresh = false) {
+                const container = document.getElementById('news-container');
+                const statusDiv = document.getElementById('update-status');
+                
+                try {
+                    // Show loading state on manual refresh
+                    if (!isAutoRefresh) {
+                        container.innerHTML = '<div id="loading">Loading latest news...</div>';
+                    }
+                    
+                    const articles = await newsCache.loadNews(apiKey);
+                    
+                    if (articles && articles.length > 0) {
+                        container.innerHTML = '';
+                        articles.forEach(article => {
+                            if (!article.title || !article.url) return; // Skip invalid articles
+                            
+                            const div = document.createElement('div');
+                            div.className = 'news-card';
+                            div.innerHTML = `
+                                <h3><a href="${article.url}" target="_blank">${article.title}</a></h3>
+                                <p>${article.description || 'No description available'}</p>
+                                <small>Published: ${new Date(article.publishedAt || Date.now()).toLocaleString()}</small>
+                                <hr>
+                                <small>Source: ${article.source?.name || 'Unknown Source'}</small>
+                            `;
+                            container.appendChild(div);
+                        });
+
+                        updateNextRefreshTimer();
+                    } else {
+                        throw new Error('No news articles available');
+                    }
+                } catch (error) {
+                    console.error('Failed to load news:', error);
+                    container.innerHTML = `
+                        <div class="error">
+                            <h3>Unable to load news</h3>
+                            <p>We're having trouble fetching the latest updates. Please try again later.</p>
+                            <button onclick="loadNews()" class="share-btn" style="margin-top:15px;">
+                                Try Again
+                            </button>
+                        </div>
+                    `;
+                    statusDiv.textContent = 'News feed unavailable';
+                }
+            }
+
+            function updateNextRefreshTimer() {
+                const cached = newsCache.getCachedNews();
+                if (cached) {
+                    const nextUpdate = new Date(cached.timestamp + newsCache.CACHE_DURATION);
+                    const updateDiv = document.getElementById('update-status');
+                    
+                    clearInterval(updateTimer);
+                    updateTimer = setInterval(() => {
+                        const now = new Date();
+                        const diff = nextUpdate - now;
+                        if (diff <= 0) {
+                            loadNews(true); // Auto refresh when time is up
+                        } else {
+                            const minutes = Math.floor(diff / 60000);
+                            const seconds = Math.floor((diff % 60000) / 1000);
+                            updateDiv.textContent = `Next update in: ${minutes}m ${seconds}s`;
+                        }
+                    }, 1000);
+                }
+            }
+
+            // Make function available globally
+            window.loadNews = loadNews;
+            
+            // Initial load
+            loadNews();
+        });
     </script>
     <script src="update-footer.js"></script>
 </body>

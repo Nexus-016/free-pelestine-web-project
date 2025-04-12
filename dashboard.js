@@ -187,13 +187,31 @@ function updateTopCountries() {
             
             list.innerHTML = sorted.map(([code, data]) => {
                 const count = data.count || 0;
+                const countryName = data.name || 'Unknown';
+                // Limit country name length for mobile
+                const displayName = countryName.length > 15 
+                    ? countryName.substring(0, 13) + '...' 
+                    : countryName;
+                
                 return `
-                    <li>
-                        <span class="country-name">${data.name || 'Unknown'}</span>
+                    <li title="${countryName}">
+                        <span class="country-name">${displayName}</span>
                         <span class="supporter-count">${count.toLocaleString()}</span>
                     </li>
                 `;
             }).join('');
+            
+            // Add event listener for overflow handling
+            if (window.innerWidth <= 768) {
+                document.querySelectorAll('.country-name').forEach(el => {
+                    el.addEventListener('click', function() {
+                        if (this.parentElement.title) {
+                            alert(this.parentElement.title);
+                        }
+                    });
+                });
+            }
+            
         } catch (error) {
             console.error('Error updating top countries:', error);
             const list = document.getElementById('top-countries');

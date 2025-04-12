@@ -7,12 +7,34 @@
     <link rel="stylesheet" href="dashboard.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        /* Force footer to stay at bottom */
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        
+        .page-content {
+            flex: 1 0 auto;
+        }
+        
+        #footer-placeholder, .footer {
+            flex-shrink: 0;
+        }
+    </style>
 </head>
 <body>
     <header class="header">
         <nav class="nav-links">
             <a href="index.html">Support Palestine</a>
-            <a href="dashboard.html">View Dashboard</a>
+            <a href="dashboard.html" class="active">View Dashboard</a>
             <a href="news.html">Latest News</a>
             <a href="about.html">About</a>
         </nav>
